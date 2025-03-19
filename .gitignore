@@ -1,0 +1,18 @@
+# Fichiers Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+
+# Fichiers Django
+db.sqlite3
+.env
+
+# Docker
+*.log
+*.pid
+*.sock
+
+# Node.js et Tailwind
+node_modules/
+static/css/output.css
