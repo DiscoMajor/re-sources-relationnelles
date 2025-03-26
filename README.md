@@ -59,5 +59,8 @@ Nous nous baserons sur le PEP 8 de python (https://peps.python.org/pep-0008/) qu
 
 !!TBC!!
 
-  
+Documentation de libs et framework utilisés : 
 
+Tailwind CSS : https://tailwindcss.com/docs/styling-with-utility-classes
+Django : https://docs.djangoproject.com/en/5.1/
+Stimulus JS : https://stimulus.hotwired.dev/
