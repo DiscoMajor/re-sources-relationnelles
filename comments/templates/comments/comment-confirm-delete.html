@@ -1,0 +1,12 @@
+<turbo-frame id="comment-{{ object.pk }}-delete">
+    <form method="post">
+      {% csrf_token %}
+      <p>Supprimer le commentaire ?</p>
+      <blockquote>
+        {{ object.content }}<br>
+        <em>par {{ object.citoyen }} le {{ object.created_at|date:"d/m/Y H:i" }}</em>
+      </blockquote>
+      <button type="submit">Oui, supprimer</button>
+      <a href="{% url 'comments:list' object.ressource.pk %}" data-turbo-frame="_top">Annuler</a>
+    </form>
+  </turbo-frame>

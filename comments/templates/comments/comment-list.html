@@ -1,0 +1,29 @@
+<h2>Commentaires pour : {{ ressource.title }}</h2>
+
+<turbo-frame id="comment-form">
+  <a href="{% url 'comments:add' 1 %}">Ajouter un commentaire</a>
+</turbo-frame>
+
+<turbo-frame id="comment-list">
+  <ul>
+    {% for comment in comments %}
+      <li id="comment-{{ comment.pk }}">
+        <strong>{{ comment.citoyen }}</strong>
+        <em>{{ comment.created_at|date:"d/m/Y H:i" }}</em><br>
+        {{ comment.content }}
+        {% if comment.citoyen == request.user %}
+          <div>
+            <turbo-frame id="comment-form">
+              <a href="{% url 'comments:edit' comment.pk %}">Modifier</a>
+            </turbo-frame>
+            <turbo-frame id="comment-{{ comment.pk }}-delete">
+              <a href="{% url 'comments:delete' comment.pk %}">Supprimer</a>
+            </turbo-frame>
+          </div>
+        {% endif %}
+      </li>
+    {% empty %}
+      <li>...</li>
+    {% endfor %}
+  </ul>
+</turbo-frame>
