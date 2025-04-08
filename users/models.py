@@ -1,18 +1,31 @@
 from django.db import models
+from django.contrib.auth.hashers import make_password, check_password
 
 class AbstractUser(models.Model):
     nom = models.CharField(max_length=100)
     prenom = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
+    password = models.CharField(max_length=128)
+    last_login = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
+    # Attributs requis par Django pour l'authentification
+    is_authenticated = True
+    is_anonymous = False
+    
     class Meta:
         abstract = True
-
+        
     def __str__(self):
-        return
+        return f"{self.prenom} {self.nom}"
     
+    # Méthodes pour gérer le mot de passe
+    def set_password(self, raw_password):
+        self.password = make_password(raw_password)
+    
+    def check_password(self, raw_password):
+        return check_password(raw_password, self.password)
 
 class Citoyen(AbstractUser):
     citycode = models.CharField(max_length=7)

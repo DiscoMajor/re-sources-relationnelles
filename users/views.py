@@ -1,37 +1,78 @@
+# users/views.py
 from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from .models import Citoyen
 
 def login_view(request):
-    """
-    Vue pour afficher le template de connexion et gérer la soumission du formulaire.
-    Pour l'instant, simule simplement une connexion réussie sans authentification réelle.
-    """
+    if request.user.is_authenticated:
+        return redirect('index')
+        
     if request.method == 'POST':
-        # Récupérer les données du formulaire
         email = request.POST.get('email')
         password = request.POST.get('password')
+        remember_me = request.POST.get('remember-me') == 'on'
         
-        # Pour l'instant, on simule juste une connexion réussie
-        # Plus tard, on implémentera l'authentification réelle
-        messages.success(request, f"Connexion réussie avec l'email {email}")
-        return redirect('index') 
+        user = authenticate(request, username=email, password=password)
         
+        if user is not None:
+            login(request, user)
+            
+            if not remember_me:
+                request.session.set_expiry(0)
+                
+            messages.success(request, f"Connexion réussie ! Bienvenue {user.prenom} {user.nom}")
+            return redirect('index')
+        else:
+            messages.error(request, "Email ou mot de passe incorrect.")
+    
     return render(request, 'users/login.html')
 
 def register_view(request):
-    """
-    Vue pour afficher le template d'inscription et gérer la soumission du formulaire.
-    Pour l'instant, simule simplement une création de compte réussie.
-    """
+    if request.user.is_authenticated:
+        return redirect('index')
+        
     if request.method == 'POST':
-        # Récupérer les données du formulaire
         prenom = request.POST.get('prenom')
         nom = request.POST.get('nom')
         email = request.POST.get('email')
+        password = request.POST.get('password')
+        password_confirmation = request.POST.get('password_confirmation')
         
-        # Pour l'instant, on simule juste la création de compte
-        # Plus tard, on implémentera la création réelle d'utilisateur
-        messages.success(request, f"Félicitations {prenom} {nom} ! Votre compte a été créé avec succès.")
+        if password != password_confirmation:
+            messages.error(request, "Les mots de passe ne correspondent pas.")
+            return render(request, 'users/register.html')
+        
+        # Vérification si l'email existe déjà
+        if Citoyen.objects.filter(email=email).exists():
+            messages.error(request, "Un compte avec cet email existe déjà.")
+            return render(request, 'users/register.html')
+        
+        # Création du nouvel utilisateur
+        user = Citoyen(
+            prenom=prenom,
+            nom=nom,
+            email=email
+        )
+        user.set_password(password)  # Utilise notre méthode pour hacher le mot de passe
+        user.save()
+        
+        # Authentification et connexion
+        user = authenticate(request, username=email, password=password)
+        if user is not None:
+            login(request, user)
+            
+        messages.success(request, f"Compte créé avec succès ! Bienvenue {prenom} {nom}")
         return redirect('index')
         
     return render(request, 'users/register.html')
+
+def logout_view(request):
+    logout(request)
+    messages.info(request, "Vous avez été déconnecté.")
+    return redirect('index')
+
+@login_required
+def profile_view(request):
+    return render(request, 'users/profile.html')
