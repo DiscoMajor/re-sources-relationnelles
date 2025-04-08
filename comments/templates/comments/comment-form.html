@@ -1,0 +1,8 @@
+<turbo-frame id="comment-form">
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Enregistrer</button>
+      <a href="{% url 'comments:list' object.ressource.pk if object else ressource_pk %}" data-turbo-frame="_top">Annuler</a>
+    </form>
+  </turbo-frame>
