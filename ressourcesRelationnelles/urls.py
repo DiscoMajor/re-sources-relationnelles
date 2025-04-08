@@ -22,5 +22,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('comments/', include('comments.urls', namespace='comments')),
     path('users/', include('users.urls')),
+    path('ressources/', include('ressources.urls', namespace='ressources')),
     path('', TemplateView.as_view(template_name='index.html'), name='index'),
 ]
