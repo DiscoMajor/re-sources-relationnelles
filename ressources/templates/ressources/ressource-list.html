@@ -20,8 +20,13 @@
         <div class="col-md-4 mb-4">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">{{ ressource.title }}</h5>
+                    <h5 class="card-title">
+                        <a href="{% url 'ressources:detail' pk=ressource.pk %}">{{ ressource.title }}</a>
+                    </h5>
                     <p class="card-text">
+                        Type: {{ ressource.type.label }}<br>
+                        Ajouté le: {{ ressource.created_at|date:"d/m/Y H:i" }}
+                    </p>
                         Type: {{ ressource.type.label }}<br>
                         Ajouté le: {{ ressource.created_at|date:"d/m/Y H:i" }}
                     </p>
