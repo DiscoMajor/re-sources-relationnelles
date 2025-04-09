@@ -35,7 +35,7 @@
                 
                 <div class="hidden sm:flex sm:items-center">
                     {% if user.is_authenticated %}
-                        <span class="mr-4 text-sm text-gray-700">Bonjour, {{ user.prenom }}</span>
+                        <span class="mr-4 text-sm text-gray-700">Bonjour, {{ user.first_name }}</span>
                         <a href="{% url 'users:profile' %}" class="mr-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
                             Mon Profil
                         </a>
@@ -79,11 +79,11 @@
                         <div class="flex items-center px-4">
                             <div class="flex-shrink-0">
                                 <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                                    <span class="text-indigo-800 font-medium">{{ user.prenom|first }}{{ user.nom|first }}</span>
+                                    <span class="text-indigo-800 font-medium">{{ user.first_name|first }}{{ user.last_name|first }}</span>
                                 </div>
                             </div>
                             <div class="ml-3">
-                                <div class="text-base font-medium text-gray-800">{{ user.prenom }} {{ user.nom }}</div>
+                                <div class="text-base font-medium text-gray-800">{{ user.first_name }} {{ user.last_name }}</div>
                                 <div class="text-sm font-medium text-gray-500">{{ user.email }}</div>
                             </div>
                         </div>
