@@ -4,7 +4,10 @@ from .models import Ressource
 class RessourceForm(forms.ModelForm):
     class Meta:
         model = Ressource
-        fields = ['title', 'type', 'relation']
+        fields = ['title', 'type', 'is_private']
         widgets = {
-            'relation': forms.CheckboxSelectMultiple(),
+            'is_private': forms.CheckboxInput(),
         }
+        labels = {
+                'is_private': 'Rendre cette ressource privée (visible uniquement par vos amis)',
+            }

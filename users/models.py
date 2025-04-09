@@ -30,23 +30,24 @@ class Citoyen(AbstractUser):
     
     def __str__(self):
         return f"{self.prenom} {self.nom}"
+    
 
 class Moderator(AbstractUser):
     is_active_moderator = models.BooleanField(default=True)
 
     def __str__(self):
-        return
+        return f"{self.prenom} {self.nom}"
     
 
 class Admin(AbstractUser):
     is_active_admin = models.BooleanField(default=True)
 
     def __str__(self):
-        return
+        return f"{self.prenom} {self.nom}"
     
 
 class SuperAdmin(AbstractUser):
     is_active_superadmin = models.BooleanField(default=True)
 
     def __str__(self):
-        return
+        return f"{self.prenom} {self.nom}"
