@@ -1,0 +1,24 @@
+{
+  "name": "Re-Sources Relationnelles",
+  "short_name": "Re-Sources",
+  "description": "Partagez et échangez vos ressources pédagogiques",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0A0302",
+  "orientation": "any",
+  "icons": [
+      {
+          "src": "/static/images/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png",
+          "purpose": "any maskable"
+      },
+      {
+          "src": "/static/images/icon-512x512.png",
+          "sizes": "512x512",
+          "type": "image/png",
+          "purpose": "any maskable"
+      }
+  ]
+}
