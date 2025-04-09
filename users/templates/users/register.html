@@ -50,25 +50,25 @@
                     <label for="first_name" class="sr-only">Prénom</label>
                     <input id="first_name" name="first_name" type="text" required
                         class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300
-                        placeholder-gray-500 text-gray-900 focus:outline-none
+                        placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none
                         focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 text-sm sm:text-base"
                         placeholder="Prénom" value="{{ form.first_name.value|default:'' }}">
                 </div>
                 <div>
                     <label for="last_name" class="sr-only">Nom</label>
                     <input id="last_name" name="last_name" type="text" required
-                        class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300
+                    class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300
                         placeholder-gray-500 text-gray-900 focus:outline-none
                         focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 text-sm sm:text-base"
                         placeholder="Nom" value="{{ form.last_name.value|default:'' }}">
                 </div>
                 <div>
-                    <label for="username" class="sr-only">Nom d'utilisateur</label>
+                    <label for="username" class="sr-only">Email</label>
                     <input id="username" name="username" type="text" required
                         class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300
-                        placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none
+                        placeholder-gray-500 text-gray-900 focus:outline-none
                         focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 text-sm sm:text-base"
-                        placeholder="Nom d'utilisateur" value="{{ form.username.value|default:'' }}">
+                        placeholder="Email" value="{{ form.username.value|default:'' }}">
                 </div>
                 <div>
                     <label for="password1" class="sr-only">Mot de passe</label>
