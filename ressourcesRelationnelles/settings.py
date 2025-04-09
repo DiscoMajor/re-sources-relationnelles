@@ -139,7 +139,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Configuration pour les backends d'authentification personnalisés
 AUTHENTICATION_BACKENDS = [
-    'users.backends.EmailBackend',  # Votre backend personnalisé
     'django.contrib.auth.backends.ModelBackend',  # Le backend par défaut de Django (comme backup)
 ]
 
@@ -147,6 +146,8 @@ AUTHENTICATION_BACKENDS = [
 LOGIN_URL = 'users:login'
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'index'
+
+AUTH_USER_MODEL = 'users.User'
 
 # PWA settings
 

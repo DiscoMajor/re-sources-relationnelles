@@ -16,15 +16,23 @@
                 <dl>
                     <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                         <dt class="text-sm font-medium text-gray-500">Nom complet</dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ user.prenom }} {{ user.nom }}</dd>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ user.first_name }} {{ user.last_name }}</dd>
                     </div>
                     <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">Nom d'utilisateur</dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ user.username }}</dd>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                         <dt class="text-sm font-medium text-gray-500">Adresse email</dt>
                         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ user.email }}</dd>
                     </div>
+                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">Code postal</dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ user.citycode|default:"Non renseigné" }}</dd>
+                    </div>
                     <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                         <dt class="text-sm font-medium text-gray-500">Compte créé le</dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ user.created_at|date:"d/m/Y" }}</dd>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ user.date_joined|date:"d/m/Y" }}</dd>
                     </div>
                 </dl>
             </div>
@@ -37,11 +45,11 @@
                 <p class="mt-1 max-w-2xl text-sm text-gray-500">Personnes avec qui vous êtes en relation</p>
             </div>
             <div class="border-t border-gray-200 p-4">
-                {% if amis %}
+                {% if user.amis.all %}
                     <ul class="divide-y divide-gray-200">
-                        {% for ami in amis %}
+                        {% for ami in user.amis.all %}
                             <li class="py-3 flex justify-between items-center">
-                                <div>{{ ami.prenom }} {{ ami.nom }}</div>
+                                <div>{{ ami.first_name }} {{ ami.last_name }}</div>
                                 <div class="flex items-center">
                                     <span class="text-sm text-gray-500 mr-4">{{ ami.email }}</span>
                                     <form method="POST" class="inline">
@@ -74,11 +82,12 @@
                 {% if utilisateurs_non_amis %}
                     <form method="POST">
                         {% csrf_token %}
+                        <input type="hidden" name="action" value="ajouter">
                         <div class="mt-1">
                             <select name="ami_id" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                 <option value="">Sélectionner un utilisateur</option>
                                 {% for utilisateur in utilisateurs_non_amis %}
-                                    <option value="{{ utilisateur.id }}">{{ utilisateur.prenom }} {{ utilisateur.nom }}</option>
+                                    <option value="{{ utilisateur.id }}">{{ utilisateur.first_name }} {{ utilisateur.last_name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
