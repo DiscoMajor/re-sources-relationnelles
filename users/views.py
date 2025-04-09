@@ -76,15 +76,25 @@ def logout_view(request):
 @login_required
 def profile_view(request):
     if request.method == 'POST':
+        action = request.POST.get('action')
         ami_id = request.POST.get('ami_id')
+        
         if ami_id:
             try:
                 ami = Citoyen.objects.get(id=ami_id)
-                request.user.amis.add(ami)
-                messages.success(request, f"{ami.prenom} {ami.nom} a été ajouté à vos relations.")
+                
+                if action == 'supprimer':
+                    request.user.amis.remove(ami)
+                    messages.success(request, f"{ami.prenom} {ami.nom} a été retiré de vos relations.")
+                else:
+                    # Ajout d'ami (comportement actuel)
+                    request.user.amis.add(ami)
+                    messages.success(request, f"{ami.prenom} {ami.nom} a été ajouté à vos relations.")
+                    
             except Citoyen.DoesNotExist:
                 messages.error(request, "Cet utilisateur n'existe pas.")
     
+    # Liste des utilisateurs qui ne sont pas encore amis
     utilisateurs_non_amis = Citoyen.objects.exclude(id=request.user.id).exclude(id__in=request.user.amis.all())
     
     context = {
