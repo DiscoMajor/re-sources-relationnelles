@@ -19,7 +19,7 @@ def create_ressources_types(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('ressources', '0001_initial'),
+        ('ressources', '0002_auto_20250409_0904'),
     ]
 
     operations = [migrations.RunPython(create_ressources_types)]
