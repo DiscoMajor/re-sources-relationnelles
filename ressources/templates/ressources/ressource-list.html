@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Liste des ressources</h1>
+    
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    {% if ressources %}
+    <div class="row">
+        {% for ressource in ressources %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ ressource.title }}</h5>
+                    <p class="card-text">
+                        Type: {{ ressource.type.label }}<br>
+                        Ajouté le: {{ ressource.created_at|date:"d/m/Y H:i" }}
+                    </p>
+                    <p>
+                        Contributeurs:
+                        <ul>
+                        {% for user in ressource.relation.all %}
+                            <li>{{ user.prenom }} {{ user.nom }}</li>
+                        {% endfor %}
+                        </ul>
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        Aucune ressource disponible pour le moment.
+    </div>
+    {% endif %}
+
+    <div class="mb-3">
+        <a href="{% url 'ressources:add' %}" class="btn btn-primary">Ajouter une ressource</a>
+    </div>
+    
+</div>
+{% endblock %}
