@@ -31,9 +31,19 @@
                     </nav>
                 </div>
                 <div class="flex items-center">
-                    <a href="{% url 'users:login' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
-                        Connexion
-                    </a>
+                    {% if user.is_authenticated %}
+                        <span class="mr-4 text-sm text-gray-700">Bonjour, {{ user.prenom }}</span>
+                        <a href="{% url 'users:profile' %}" class="mr-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                            Mon Profil
+                        </a>
+                        <a href="{% url 'users:logout' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            Déconnexion
+                        </a>
+                    {% else %}
+                        <a href="{% url 'users:login' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                            Connexion
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         </div>
