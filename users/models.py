@@ -9,8 +9,6 @@ class AbstractUser(models.Model):
     last_login = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
-    # Attributs requis par Django pour l'authentification
     is_authenticated = True
     is_anonymous = False
     
@@ -20,7 +18,6 @@ class AbstractUser(models.Model):
     def __str__(self):
         return f"{self.prenom} {self.nom}"
     
-    # Méthodes pour gérer le mot de passe
     def set_password(self, raw_password):
         self.password = make_password(raw_password)
     
@@ -29,10 +26,10 @@ class AbstractUser(models.Model):
 
 class Citoyen(AbstractUser):
     citycode = models.CharField(max_length=7)
-
-    def __str__(self):
-        return
+    amis = models.ManyToManyField('self', symmetrical=True)
     
+    def __str__(self):
+        return f"{self.prenom} {self.nom}"
 
 class Moderator(AbstractUser):
     is_active_moderator = models.BooleanField(default=True)

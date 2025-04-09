@@ -6,7 +6,8 @@
 {% block content %}
 <div class="py-10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+        <!-- Informations de profil -->
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
             <div class="px-4 py-5 sm:px-6">
                 <h1 class="text-2xl font-bold text-gray-900">Mon Profil</h1>
                 <p class="mt-1 max-w-2xl text-sm text-gray-500">Informations personnelles</p>
@@ -26,6 +27,58 @@
                         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ user.created_at|date:"d/m/Y" }}</dd>
                     </div>
                 </dl>
+            </div>
+        </div>
+        
+        <!-- Section des relations -->
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
+            <div class="px-4 py-5 sm:px-6">
+                <h2 class="text-lg font-medium text-gray-900">Mes relations</h2>
+                <p class="mt-1 max-w-2xl text-sm text-gray-500">Personnes avec qui vous êtes en relation</p>
+            </div>
+            <div class="border-t border-gray-200 p-4">
+                {% if amis %}
+                    <ul class="divide-y divide-gray-200">
+                        {% for ami in amis %}
+                            <li class="py-3 flex justify-between items-center">
+                                <div>{{ ami.prenom }} {{ ami.nom }}</div>
+                                <div class="text-sm text-gray-500">{{ ami.email }}</div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-gray-500">Vous n'avez pas encore de relations.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Formulaire d'ajout de relation -->
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+            <div class="px-4 py-5 sm:px-6">
+                <h2 class="text-lg font-medium text-gray-900">Ajouter une relation</h2>
+                <p class="mt-1 max-w-2xl text-sm text-gray-500">Sélectionnez un utilisateur à ajouter</p>
+            </div>
+            <div class="border-t border-gray-200 p-4">
+                {% if utilisateurs_non_amis %}
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mt-1">
+                            <select name="ami_id" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                <option value="">Sélectionner un utilisateur</option>
+                                {% for utilisateur in utilisateurs_non_amis %}
+                                    <option value="{{ utilisateur.id }}">{{ utilisateur.prenom }} {{ utilisateur.nom }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mt-4">
+                            <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Ajouter
+                            </button>
+                        </div>
+                    </form>
+                {% else %}
+                    <p class="text-gray-500">Tous les utilisateurs sont déjà dans vos relations.</p>
+                {% endif %}
             </div>
         </div>
     </div>
