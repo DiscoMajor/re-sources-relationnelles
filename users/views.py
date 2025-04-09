@@ -75,4 +75,20 @@ def logout_view(request):
 
 @login_required
 def profile_view(request):
-    return render(request, 'users/profile.html')
+    if request.method == 'POST':
+        ami_id = request.POST.get('ami_id')
+        if ami_id:
+            try:
+                ami = Citoyen.objects.get(id=ami_id)
+                request.user.amis.add(ami)
+                messages.success(request, f"{ami.prenom} {ami.nom} a été ajouté à vos relations.")
+            except Citoyen.DoesNotExist:
+                messages.error(request, "Cet utilisateur n'existe pas.")
+    
+    utilisateurs_non_amis = Citoyen.objects.exclude(id=request.user.id).exclude(id__in=request.user.amis.all())
+    
+    context = {
+        'utilisateurs_non_amis': utilisateurs_non_amis,
+        'amis': request.user.amis.all()
+    }
+    return render(request, 'users/profile.html', context)
