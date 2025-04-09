@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card mb-4">
+        <div class="card-header">
+            <h1>{{ ressource.title }}</h1>
+        </div>
+        <div class="card-body">
+            <p><strong>Type:</strong> {{ ressource.type.label }}</p>
+            <p><strong>Auteur:</strong> {{ ressource.author.prenom }} {{ ressource.author.nom }}</p>
+            <p><strong>Ajouté le:</strong> {{ ressource.created_at|date:"d/m/Y H:i" }}</p>
+            
+            {% if ressource.relation.all %}
+            <p><strong>Contributeurs:</strong></p>
+            <ul>
+                {% for user in ressource.relation.all %}
+                <li>{{ user.prenom }} {{ user.nom }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h2>Commentaires</h2>
+        </div>
+        <div class="card-body">
+            {% if user.is_authenticated %}
+            <div id="comment-form-container">
+                <form method="post" action="{% url 'comments:add' ressource_pk=ressource.pk %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="id_content">Votre commentaire:</label>
+                        <textarea name="content" id="id_content" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-2">Ajouter un commentaire</button>
+                </form>
+            </div>
+            <hr>
+            {% endif %}
+
+            <div id="comments-list">
+                {% if comments %}
+                    {% for comment in comments %}
+                    <div class="comment mb-3">
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ comment.citoyen.prenom }} {{ comment.citoyen.nom }}</strong>
+                            <small>{{ comment.created_at|date:"d/m/Y H:i" }}</small>
+                        </div>
+                        <p>{{ comment.content }}</p>
+                        
+                        {% if user == comment.citoyen %}
+                        <div class="comment-actions">
+                            <a href="{% url 'comments:edit' pk=comment.pk %}" class="btn btn-sm btn-warning">Modifier</a>
+                            <a href="{% url 'comments:delete' pk=comment.pk %}" class="btn btn-sm btn-danger">Supprimer</a>
+                        </div>
+                        {% endif %}
+                        <hr>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p>Aucun commentaire pour le moment.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a href="{% url 'ressources:list' %}" class="btn btn-secondary">Retour à la liste</a>
+    </div>
+</div>
+{% endblock %}

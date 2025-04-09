@@ -2,9 +2,27 @@ from django.shortcuts import render
 from django.views.generic import CreateView
 from django.urls import reverse_lazy
 from .models import Ressource
+from comments.models import Comment
 from .forms import RessourceForm
-from django.views.generic import ListView
+from comments.forms import CommentForm
+from django.views.generic import ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
+
+
+class RessourceDetailView(DetailView):
+    model = Ressource
+    template_name = 'ressources/ressource-detail.html'
+    context_object_name = 'ressource'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['comments'] = Comment.objects.filter(
+            ressource=self.object, 
+            is_deleted=False
+        ).order_by('-created_at')
+        context['comment_form'] = CommentForm()
+        return context
+    
 
 class RessourceListView(ListView):
     model = Ressource

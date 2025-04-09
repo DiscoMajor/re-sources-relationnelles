@@ -50,7 +50,7 @@ class CommentCreateView(CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy('comments:list', kwargs={'ressource_pk': self.kwargs['ressource_pk']})
+        return reverse_lazy('ressources:detail', kwargs={'pk': self.object.ressource.pk})
 
 
 class CommentUpdateView(LoginRequiredMixin, UpdateView):
@@ -78,7 +78,7 @@ class CommentUpdateView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy('comments:list', kwargs={'ressource_pk': self.object.ressource.pk})
+        return reverse_lazy('ressources:detail', kwargs={'pk': self.object.ressource.pk})
 
 
 class CommentDeleteView(LoginRequiredMixin, DeleteView):
@@ -104,4 +104,4 @@ class CommentDeleteView(LoginRequiredMixin, DeleteView):
             )
             return HttpResponse(html)
 
-        return redirect('comments:list', ressource_pk=self.object.ressource.pk)
+        return redirect('ressources:detail', pk=self.object.ressource.pk)
