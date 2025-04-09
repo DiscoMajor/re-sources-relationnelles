@@ -9,8 +9,8 @@ class Type(models.Model):
 class Ressource(models.Model):
     title = models.CharField(max_length=500)
     type = models.ForeignKey(Type, on_delete=models.CASCADE)
-    author = models.ForeignKey('users.Citoyen', on_delete=models.CASCADE, related_name='created_resources')
-    is_private = models.BooleanField(default=False, help_text="Si activé, seuls les amis peuvent voir cette ressource")
+    author = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='created_resources')
+    is_private = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)

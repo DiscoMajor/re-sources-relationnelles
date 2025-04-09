@@ -1,7 +1,7 @@
 from django.db import models
 
 class Comment(models.Model):
-    citoyen = models.ForeignKey('users.Citoyen', on_delete=models.CASCADE, related_name='comments')
+    citoyen = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='comments')
     ressource = models.ForeignKey('ressources.Ressource', on_delete=models.CASCADE, related_name='comments')
     content = models.TextField()
     is_deleted = models.BooleanField(default=False)
