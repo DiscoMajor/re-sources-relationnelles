@@ -2,8 +2,6 @@ const staticCacheName = 're-sources-cache-v1';
 
 const filesToCache = [
     '/',
-    '/static/css/main.css',
-    '/static/css/styles.css',
     '/static/pwa/offline.html'
 ];
 
