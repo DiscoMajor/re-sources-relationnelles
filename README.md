@@ -3,14 +3,19 @@ ________________________________________________________________________________
 
 ## Pré-requis
 
-    #### Développeur
-      Pour pouvoir travailler sur le projet, Docker doit etre installé sur votre machine.
-    #### Utilisateurs
-      Aucun pré-requis nécessaire.
+    Pour pouvoir travailler sur le projet, Docker doit etre installé sur votre machine.
       
 ## Installation
 
+    - Cloner le repertoire sur votre machine
 
+    - Ouvrir un terminal à la racine du projet et tapez les commandes suivantes :
+
+        ```
+        docker compose build
+        ```
+
+        
 
 docker compose run --rm web python manage.py migrate (à refaire après un git pull)
 
