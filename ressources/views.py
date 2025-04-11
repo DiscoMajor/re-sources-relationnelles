@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import CreateView
+from django.views.generic import CreateView, DeleteView
 from django.urls import reverse_lazy
 from .models import Ressource
 from comments.models import Comment
@@ -7,6 +7,10 @@ from .forms import RessourceForm
 from comments.forms import CommentForm
 from django.views.generic import ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect
+from django.template.loader import render_to_string
+from django.utils import timezone
 
 
 class RessourceDetailView(DetailView):
@@ -59,3 +63,17 @@ class RessourceCreateView(LoginRequiredMixin, CreateView):
         
     def get_success_url(self):
         return reverse_lazy('ressources:list')
+    
+class RessourceDeleteView(LoginRequiredMixin, DeleteView):
+    model = Ressource
+    template_name = 'ressources/ressource-confirm-delete.html'
+
+    def get_queryset(self):
+        return Ressource.objects.filter(author=self.request.user)
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.deleted_at = timezone.now()
+        self.object.save()
+
+        return redirect('ressources:list')

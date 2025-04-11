@@ -26,8 +26,9 @@
 {% if ressources %}
 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 {% for ressource in ressources %}
+<div class="bg-white overflow-hidden shadow rounded-lg h-full group-hover:bg-gray-50">
 <a href="{% url 'ressources:detail' ressource.id %}" class="block transition duration-200 hover:shadow-lg group">
-    <div class="bg-white overflow-hidden shadow rounded-lg h-full group-hover:bg-gray-50">
+    
     <div class="px-4 py-5 sm:p-6">
         <h3 class="text-lg font-medium text-gray-900 truncate group-hover:text-indigo-600">{{ ressource.title }}</h3>
         <div class="mt-2 flex items-center text-sm text-gray-500">
@@ -42,7 +43,13 @@
         </svg>
         <span>Ajouté le: {{ ressource.created_at|date:"d/m/Y H:i" }}</span>
         </div>
-        
+        {% if ressource.author == request.user %}
+        <div class="mt-2 flex items-center text-sm text-gray-500">
+        <turbo-frame id="ressource-{{ ressource.pk }}-delete">
+          <a href="{% url 'ressources:delete' ressource.pk %}">Supprimer</a>
+        </turbo-frame>
+        </div>
+        {% endif %}
         {% if ressource.relation.all %}
         <div class="mt-4">
         <h4 class="text-sm font-medium text-gray-900">Contributeurs:</h4>
@@ -59,8 +66,8 @@
         </div>
         {% endif %}
     </div>
-    </div>
 </a>
+</div>
 {% endfor %}
 </div>
 {% else %}
