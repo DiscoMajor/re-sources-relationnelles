@@ -18,8 +18,18 @@ docker compose up -d
 ```
 docker compose up
 ```
+Laisser le terminal ouvert.
 
-docker compose run --rm web python manage.py migrate (à refaire après un git pull)
+- Création du superuser
+Ouvrir un autre terminal et rentrer la commande suivante :
+```
+docker compose run --rm web python manage.py createsuperuser
+```
+
+**/!\  A refaire après chaque modif de develop /!\**
+```
+docker compose run --rm web python manage.py migrate
+```
 
 ### Bonnes pratiques (nommage etc.)
 
