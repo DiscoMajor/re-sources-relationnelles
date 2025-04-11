@@ -53,6 +53,11 @@ def profile_view(request):
         action = request.POST.get('action')
         ami_id = request.POST.get('ami_id')
         
+        # Vérifier si l'ami_id est vide
+        if not ami_id and action == 'ajouter':
+            messages.error(request, "Veuillez sélectionner un utilisateur.")
+            return redirect('users:profile')
+        
         try:
             ami = User.objects.get(id=ami_id)
             
