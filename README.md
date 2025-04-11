@@ -1,6 +1,20 @@
+# (RE)Sources Relationnelles
+_______________________________________________________________________________________________________________________________
+
+## Pré-requis
+
+    #### Développeur
+      Pour pouvoir travailler sur le projet, Docker doit etre installé sur votre machine.
+    #### Utilisateurs
+      Aucun pré-requis nécessaire.
+      
+## Installation
+
+
+
 docker compose run --rm web python manage.py migrate (à refaire après un git pull)
 
-###Bonnes pratiques (nommage etc.)
+### Bonnes pratiques (nommage etc.)
 
 Nous nous baserons sur le PEP 8 de python (https://peps.python.org/pep-0008/) qui est en anglais, ci dessous un résumé en français.
 
