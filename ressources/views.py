@@ -22,7 +22,7 @@ class RessourceDetailView(DetailView):
         ).order_by('-created_at')
         context['comment_form'] = CommentForm()
         return context
-    
+
 
 class RessourceListView(ListView):
     model = Ressource

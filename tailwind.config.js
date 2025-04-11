@@ -3,7 +3,9 @@ module.exports = {
   content: [
     "./templates/**/*.html",
     "./users/templates/**/*.html",
-    // Ajoutez ici tous les autres dossiers contenant des templates
+    "./ressources/templates/**/*.html",
+    "./comments/templates/**/*.html",
+    // Si vous avez d'autres apps, ajoutez-les ici
   ],
   theme: {
     extend: {},
