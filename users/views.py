@@ -84,3 +84,6 @@ def index_view(request):
     if request.user.is_authenticated:
         return redirect('ressources:list')
     return render(request, 'index.html')
+
+def info(request):
+    return render(request, 'info.html')
