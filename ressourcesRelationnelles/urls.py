@@ -17,10 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
-from users.views import index_view
+from users.views import index_view, info
 
 urlpatterns = [
     path('', index_view, name='index'),
+    path('info/', info, name='info'),
     path('admin/', admin.site.urls),
     path('comments/', include('comments.urls', namespace='comments')),
     path('users/', include('users.urls')),
