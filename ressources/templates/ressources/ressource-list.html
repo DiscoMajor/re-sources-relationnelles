@@ -5,7 +5,7 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
 <h1 class="text-3xl font-bold text-gray-900 mb-4 sm:mb-0">Liste des ressources</h1>
-<a href="{% url 'ressources:add' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+<a href="{% url 'ressources:add' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
     <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
     <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
     </svg>
@@ -29,7 +29,7 @@
 <a href="{% url 'ressources:detail' ressource.id %}" class="block transition duration-200 hover:shadow-lg group">
     <div class="bg-white overflow-hidden shadow rounded-lg h-full group-hover:bg-gray-50">
     <div class="px-4 py-5 sm:p-6">
-        <h3 class="text-lg font-medium text-gray-900 truncate group-hover:text-indigo-600">{{ ressource.title }}</h3>
+        <h3 class="text-lg font-medium text-gray-900 truncate group-hover:text-teal-600">{{ ressource.title }}</h3>
         <div class="mt-2 flex items-center text-sm text-gray-500">
         <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
@@ -49,7 +49,7 @@
         <ul class="mt-2 divide-y divide-gray-200">
             {% for user in ressource.relation.all %}
             <li class="py-2 flex items-center text-sm">
-            <div class="flex-shrink-0 h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-medium">
+            <div class="flex-shrink-0 h-8 w-8 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-medium">
                 {{ user.first_name|first }}{{ user.last_name|first }}
             </div>
             <span class="ml-3">{{ user.first_name }} {{ user.last_name }}</span>
@@ -88,7 +88,7 @@
     Commencez par créer une nouvelle ressource pour la partager avec la communauté.
 </p>
 <div class="mt-6">
-    <a href="{% url 'ressources:add' %}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+    <a href="{% url 'ressources:add' %}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
     <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
         <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
     </svg>
