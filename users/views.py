@@ -74,3 +74,8 @@ def profile_view(request):
     }
     
     return render(request, 'users/profile.html', context)
+
+def index_view(request):
+    if request.user.is_authenticated:
+        return redirect('ressources:list')
+    return render(request, 'index.html')
