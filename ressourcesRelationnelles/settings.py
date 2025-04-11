@@ -163,24 +163,24 @@ PWA_APP_STATUS_BAR_COLOR = 'default'
 PWA_SERVICE_WORKER_PATH = os.path.join(BASE_DIR, 'static/pwa/serviceworker.js')
 PWA_APP_ICONS = [
     {
-        'src': '/static/images/icon-192x192.png',
+        'src': '/static/images/ressource-logo.png',
         'sizes': '160x160'
     }
 ]
 PWA_APP_ICONS_APPLE = [
     {
-        'src': '/static/images/icon-192x192.png',
+        'src': '/static/images/ressource-logo.png',
         'sizes': '160x160'
     }
 ]
 PWA_APP_SPLASH_SCREEN = [
     {
-        'src': '/static/images/icons/splash-640x1136.png',
+        'src': '/static/images/ressource-logo.png',
         'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
     }
 ]
 PWA_APP_DIR = 'ltr'
-PWA_APP_LANG = 'en-US'
+PWA_APP_LANG = 'fr-FR'
 PWA_APP_SHORTCUTS = [
     {
         'name': 'Shortcut',
@@ -190,7 +190,7 @@ PWA_APP_SHORTCUTS = [
 ]
 PWA_APP_SCREENSHOTS = [
     {
-      'src': '/static/images/icons/splash-750x1334.png',
+      'src': '/static/images/ressource-logo.png',
       'sizes': '750x1334',
       "type": "image/png"
     }

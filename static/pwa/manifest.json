@@ -9,13 +9,13 @@
   "orientation": "any",
   "icons": [
       {
-          "src": "/static/images/icon-192x192.png",
+          "src": "/static/images/ressource-logo.png",
           "sizes": "192x192",
           "type": "image/png",
           "purpose": "any maskable"
       },
       {
-          "src": "/static/images/icon-512x512.png",
+          "src": "/static/images/ressource-logo.png",
           "sizes": "512x512",
           "type": "image/png",
           "purpose": "any maskable"
