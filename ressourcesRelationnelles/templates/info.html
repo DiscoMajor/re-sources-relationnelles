@@ -1,40 +1,105 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block title %}(RE)Sources Relationnelles - À propos{% endblock %}
-
 {% block content %}
 <!-- Info Section -->
-<div class="bg-white py-16 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-4xl mx-auto">
-        <h1 class="text-3xl font-extrabold text-gray-900 sm:text-4xl text-center mb-10">
-            À propos de l'application (RE)Sources Relationnelles
-        </h1>
-        <div class="prose prose-lg text-gray-700">
-            <p>
-                Dans un contexte sociétal en perpétuelle mutation, marqué par l’individualisation croissante des parcours de vie et une transformation profonde des rapports humains, le Ministère des Solidarités et de la Santé a exprimé le souhait de soutenir des initiatives innovantes visant à renforcer le tissu relationnel entre les citoyens.
-            </p>
-            <p>
-                C’est dans cette dynamique que s’inscrit la plateforme <strong>(RE)Sources Relationnelles</strong>, conçue comme un espace numérique fédérateur, accessible à toutes et tous, et porteur de lien social. Elle se veut une réponse concrète aux besoins fondamentaux identifiés dans la pyramide de Maslow, en particulier ceux relatifs à l’appartenance, l’estime et l’accomplissement de soi.
-            </p>
-            <p>
-                Fruit d’une réflexion pluridisciplinaire mobilisant des expertises techniques, humaines et organisationnelles, cette solution s’articule autour de trois ambitions principales :
-            </p>
-            <ul>
-                <li>Proposer un accès simplifié à des ressources pédagogiques et documentaires sur les relations humaines dans toutes leurs dimensions (familiales, amicales, professionnelles, etc.) ;</li>
-                <li>Permettre aux citoyennes et citoyens de partager leurs propres ressources, en favorisant une dynamique de co-construction, d’inclusion et de bienveillance ;</li>
-                <li>Offrir des outils d’analyse via un tableau de bord statistique facilitant la compréhension des usages et l'amélioration continue des services proposés.</li>
-            </ul>
-            <p>
-                L'application intègre un <strong>référentiel de ressources modulable</strong>, des fonctions de suivi de parcours utilisateur (favoris, progression, historique), un espace d’échange modéré, et des outils de filtrage avancés selon les thématiques relationnelles abordées.
-            </p>
-            <p>
-                Conçue selon une architecture <strong>Modèle-Vue-Contrôleur (MVC)</strong>, elle respecte les exigences réglementaires en matière d’accessibilité (RGAA), de protection des données personnelles (RGPD), et de compatibilité avec les standards du Web les plus récents.
-            </p>
-            <p>
-                Ce dispositif numérique s’inscrit dans la continuité des missions de service public portées par le ministère, en matière de cohésion sociale, de solidarité intergénérationnelle et de promotion de la santé relationnelle. Il ambitionne de devenir un <strong>outil structurant au service du lien social, de la citoyenneté active et du vivre-ensemble</strong>.
+<div class="bg-gradient-to-b from-white to-teal-50">
+<div class="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+<div class="text-center mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl md:text-5xl">
+    <span class="block">À propos de</span>
+    <span class="block text-teal-600 mt-1">(RE)Sources Relationnelles</span>
+    </h1>
+    <div class="mt-6 max-w-3xl mx-auto">
+    <div class="h-1 w-20 bg-teal-500 rounded mx-auto"></div>
+    </div>
+</div>
+
+<div class="relative mt-10">
+    <div class="hidden lg:block absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-teal-100 bg-opacity-30 rounded-full filter blur-xl"></div>
+    <div class="hidden lg:block absolute bottom-0 left-0 -mb-20 -ml-20 w-80 h-80 bg-teal-100 bg-opacity-30 rounded-full filter blur-xl"></div>
+    
+    <div class="relative bg-white rounded-lg shadow-xl overflow-hidden">
+    <div class="p-6 sm:p-10">
+        <div class="prose prose-lg max-w-none text-gray-700 prose-headings:text-teal-700 prose-a:text-teal-600">
+        <p class="lead text-xl text-gray-600 font-light mb-8">
+            Dans un contexte sociétal en perpétuelle mutation, marqué par l'individualisation croissante des parcours de vie et une transformation profonde des rapports humains, le Ministère des Solidarités et de la Santé a exprimé le souhait de soutenir des initiatives innovantes visant à renforcer le tissu relationnel entre les citoyens.
+        </p>
+        
+        <div class="bg-teal-50 p-6 rounded-lg border-l-4 border-teal-500 mb-8">
+            <p class="m-0 text-lg">
+            <span class="font-medium text-teal-700">Notre mission :</span> La plateforme <strong class="text-teal-700">(RE)Sources Relationnelles</strong> est conçue comme un espace numérique fédérateur, accessible à toutes et tous, et porteur de lien social. Elle se veut une réponse concrète aux besoins fondamentaux identifiés dans la pyramide de Maslow, en particulier ceux relatifs à l'appartenance, l'estime et l'accomplissement de soi.
             </p>
         </div>
+        
+        <p>
+            Fruit d'une réflexion pluridisciplinaire mobilisant des expertises techniques, humaines et organisationnelles, cette solution s'articule autour de trois ambitions principales :
+        </p>
+        
+        <div class="grid gap-6 md:grid-cols-3 my-8">
+            <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-teal-500 hover:shadow-lg transition duration-300">
+            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-teal-500 text-white mb-4">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Accès aux ressources</h3>
+            <p class="text-gray-600">
+                Proposer un accès simplifié à des ressources pédagogiques et documentaires sur les relations humaines dans toutes leurs dimensions.
+            </p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-teal-500 hover:shadow-lg transition duration-300">
+            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-teal-500 text-white mb-4">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Partage citoyen</h3>
+            <p class="text-gray-600">
+                Permettre aux citoyennes et citoyens de partager leurs propres ressources, en favorisant une dynamique de co-construction et de bienveillance.
+            </p>
+            </div>
+            
+            <div class="bg-white p-6 rounded-lg shadow-md border-t-4 border-teal-500 hover:shadow-lg transition duration-300">
+            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-teal-500 text-white mb-4">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Analyse et amélioration</h3>
+            <p class="text-gray-600">
+                Offrir des outils d'analyse via un tableau de bord statistique facilitant la compréhension des usages et l'amélioration continue.
+            </p>
+            </div>
+        </div>
+        
+        <p>
+            L'application intègre un <strong class="text-teal-700">référentiel de ressources modulable</strong>, des fonctions de suivi de parcours utilisateur (favoris, progression, historique), un espace d'échange modéré, et des outils de filtrage avancés selon les thématiques relationnelles abordées.
+        </p>
+        
+        <p>
+            Conçue selon une architecture <strong class="text-teal-700">Modèle-Vue-Contrôleur (MVC)</strong>, elle respecte les exigences réglementaires en matière d'accessibilité (RGAA), de protection des données personnelles (RGPD), et de compatibilité avec les standards du Web les plus récents.
+        </p>
+        
+        <div class="border-l-4 border-teal-500 pl-4 italic text-lg text-gray-700 my-8">
+            <p>
+            Ce dispositif numérique s'inscrit dans la continuité des missions de service public portées par le ministère, en matière de cohésion sociale, de solidarité intergénérationnelle et de promotion de la santé relationnelle. Il ambitionne de devenir un <strong>outil structurant au service du lien social, de la citoyenneté active et du vivre-ensemble</strong>.
+            </p>
+        </div>
+        </div>
     </div>
+    </div>
+</div>
+
+<div class="mt-12 text-center">
+    <a href="{% url 'ressources:list' %}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 transition-colors duration-200">
+    Découvrir nos ressources
+    <svg class="ml-2 -mr-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+    </svg>
+    </a>
+</div>
+</div>
 </div>
 {% endblock %}
