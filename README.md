@@ -26,7 +26,7 @@ Ouvrir un autre terminal et rentrer la commande suivante :
 docker compose run --rm web python manage.py createsuperuser
 ```
 
-** /!\  A refaire après chaque modif de develop /!\ **
+**A refaire après chaque modif de develop**
 ```
 docker compose run --rm web python manage.py migrate
 ```
