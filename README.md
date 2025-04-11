@@ -12,6 +12,13 @@ Pour pouvoir travailler sur le projet, Docker doit etre installé sur votre mach
 ```
 docker compose build
 ```
+```
+docker compose up -d
+```
+```
+docker compose up
+```
+
 docker compose run --rm web python manage.py migrate (à refaire après un git pull)
 
 ### Bonnes pratiques (nommage etc.)
