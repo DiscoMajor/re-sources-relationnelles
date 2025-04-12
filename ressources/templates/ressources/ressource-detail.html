@@ -12,6 +12,14 @@
                 <p><span class="font-medium text-gray-700">Type:</span> {{ ressource.type.label }}</p>
                 <p><span class="font-medium text-gray-700">Auteur:</span> {{ ressource.author.first_name }} {{ ressource.author.last_name }}</p>
                 <p><span class="font-medium text-gray-700">Ajouté le:</span> {{ ressource.created_at|date:"d/m/Y H:i" }}</p>
+
+                {% if ressource.author == request.user %}
+                <div class="mt-2 flex items-center text-sm text-gray-500">
+                <turbo-frame id="ressource-{{ ressource.pk }}-delete">
+                  <a href="{% url 'ressources:delete' ressource.pk %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">Supprimer</a>
+                </turbo-frame>
+                </div>
+                {% endif %}
                 
                 {% if ressource.relation.all %}
                 <div>
