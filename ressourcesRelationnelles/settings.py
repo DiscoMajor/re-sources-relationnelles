@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'ressources',
     'comments',
     'pwa',
+    'cartography',
 ]
 
 MIDDLEWARE = [
