@@ -28,4 +28,5 @@ urlpatterns = [
     path('ressources/', include('ressources.urls', namespace='ressources')),
     path('', TemplateView.as_view(template_name='index.html'), name='index'),
     path('', include('pwa.urls')),
+    path('cartography/', include('cartography.urls', namespace='cartography')),
 ]

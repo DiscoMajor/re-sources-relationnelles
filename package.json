@@ -1,10 +1,20 @@
 {
   "devDependencies": {
+    "@babel/core": "^7.26.10",
+    "@babel/preset-env": "^7.26.9",
     "autoprefixer": "^10.4.21",
+    "babel-loader": "^10.0.0",
     "postcss": "^8.5.3",
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "^3.4.17",
+    "webpack": "^5.99.6",
+    "webpack-cli": "^6.0.1"
   },
   "scripts": {
-    "build-css": "tailwindcss -i ./static/css/styles.css -o ./static/css/main.css --watch"
+    "build-css": "tailwindcss -i ./static/css/styles.css -o ./static/css/main.css --watch",
+    "build": "webpack --mode=production",
+    "dev": "webpack --watch --mode=development"
+  },
+  "dependencies": {
+    "@hotwired/stimulus": "^3.2.2"
   }
 }
