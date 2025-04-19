@@ -76,4 +76,5 @@ class RessourceDeleteView(LoginRequiredMixin, DeleteView):
         self.object.deleted_at = timezone.now()
         self.object.save()
 
-        return redirect('ressources:list')
+    def get_success_url(self):
+        return reverse_lazy('ressources:list')
