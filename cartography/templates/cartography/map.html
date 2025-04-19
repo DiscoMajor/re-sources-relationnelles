@@ -1,14 +1,16 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Cartographie{% endblock %}
 
 {% block extra_css %}
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""/>
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""/>
+
 <style>
-    #map {
+    .map-container {
         height: 100%;
         width: 100%;
     }
@@ -18,15 +20,22 @@
 {% block content %}
 <div class="container mx-auto p-4">
     <h1 class="text-2xl font-bold text-gray-800 mb-4">Carte</h1>
-
-    <div class="flex flex-col lg:flex-row gap-4 h-[600px]">
+    
+    <!-- Conteneur principal avec Stimulus controller -->
+    <div data-controller="map" class="flex flex-col lg:flex-row gap-4 h-[600px]">
+        <!-- Carte principale -->
         <div class="w-full lg:w-3/4 bg-white rounded-lg shadow-md overflow-hidden">
-            <div id="map" class="rounded-lg"></div>
+            <div data-map-target="container" 
+                 data-map-latitude-value="48.856614"
+                 data-map-longitude-value="2.3522219"
+                 data-map-zoom-value="13"
+                 class="map-container rounded-lg"></div>
         </div>
         
+        <!-- Panneau latéral pour les filtres -->
         <div class="w-full lg:w-1/4 bg-white rounded-lg shadow-md p-4">
             <h2 class="text-xl font-semibold text-gray-700 mb-4">Filtres</h2>
-            
+            <!-- Contenu des filtres à venir plus tard -->
             <p class="text-gray-500 text-sm">Les filtres seront ajoutés ultérieurement.</p>
         </div>
     </div>
@@ -34,17 +43,11 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
         crossorigin=""></script>
 
-<script>
-    var map = L.map('map').setView([48.856614, 2.3522219], 13);
-
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        subdomains: 'abcd',
-        maxZoom: 20
-    }).addTo(map);
-</script>
+<!-- Bundle généré par webpack -->
+<script src="{% static 'dist/bundle.js' %}"></script>
 {% endblock %}

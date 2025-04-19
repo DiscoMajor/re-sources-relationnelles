@@ -12,7 +12,7 @@ RUN pip install -r requirements.txt
 RUN apt-get update && apt-get install -y nodejs npm
 
 # Installe Tailwind CSS et ses dépendances
-RUN npm install -D tailwindcss@latest postcss autoprefixer leaflet stimulus
+RUN npm install -D tailwindcss@latest postcss autoprefixer leaflet @hotwired/stimulus
 
 # Copie le reste des fichiers de l'application
 COPY . .
