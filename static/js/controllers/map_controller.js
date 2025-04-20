@@ -1,7 +1,6 @@
 import { Controller } from "@hotwired/stimulus";
 import { fetchHealthFacilities } from "../services/open-data";
 
-
 const DEFAULT_COORDINATES = {
     PARIS: {
         lat: 48.856614,
@@ -25,9 +24,11 @@ export default class extends Controller {
     };
 
     connect() {
-        const latitude = this.hasLatitudeValue ? this.latitudeValue : 48.856614;
-        const longitude = this.hasLongitudeValue ? this.longitudeValue : 2.3522219;
-        const zoom = this.hasZoomValue ? this.zoomValue : 12;
+        console.log("🗺️ MapController connected");
+
+        const latitude = this.hasLatitudeValue ? this.latitudeValue : DEFAULT_COORDINATES.PARIS.lat;
+        const longitude = this.hasLongitudeValue ? this.longitudeValue : DEFAULT_COORDINATES.PARIS.lng;
+        const zoom = this.hasZoomValue ? this.zoomValue : DEFAULT_COORDINATES.PARIS.zoom;
 
         this.map = L.map(this.containerTarget).setView([latitude, longitude], zoom);
 
@@ -36,6 +37,8 @@ export default class extends Controller {
             subdomains: 'abcd',
             maxZoom: 20
         }).addTo(this.map);
+
+        L.control.scale({ imperial: false }).addTo(this.map);
 
         setTimeout(() => {
             this.map.invalidateSize();
@@ -54,12 +57,32 @@ export default class extends Controller {
         }
     }
 
+    centerMapOnCoordinates(latitude, longitude, zoom = 16) {
+        if (this.map) {
+            this.map.setView([latitude, longitude], zoom);
+        }
+    }
+
+    addAddressMarker(latitude, longitude, label) {
+        if (this.addressMarker) {
+            this.map.removeLayer(this.addressMarker);
+        }
+
+        // Markerr pour l'adresse recherchée (sans popup atm)
+        const addressIcon = L.divIcon({
+            html: `<div style="background-color: #3b82f6; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white;"></div>`,
+            className: 'custom-div-icon',
+            iconSize: [14, 14],
+            iconAnchor: [7, 7]
+        });
+
+        this.addressMarker = L.marker([latitude, longitude], { icon: addressIcon })
+            .addTo(this.map);
+    }
+
     async loadFacilities(type = null) {
         try {
-            // Récup les établissements directement depuis l'API
             const facilities = await fetchHealthFacilities(type);
-
-            // Afficher les établissements sur la carte
             this.displayFacilities(facilities);
         } catch (error) {
             console.error("Erreur lors du chargement des établissements:", error);
@@ -69,7 +92,7 @@ export default class extends Controller {
     displayFacilities(facilities) {
         this.clearMarkers();
 
-        // Filtrer les établissements avec des coordonnées valides
+        // Filtrer les établissements avec des coordonnées valides (revoir ça car c'est pas super propre et que je skip certains etablissements)
         const validFacilities = facilities.filter(f =>
             f.latitude && f.longitude &&
             !isNaN(f.latitude) && !isNaN(f.longitude)
@@ -86,7 +109,7 @@ export default class extends Controller {
             iconSize: [12, 12],
             iconAnchor: [6, 6]
         });
-        
+
         const icons = {
             hospital: createDivIcon('red'),
             pharmacy: createDivIcon('green'),
@@ -95,13 +118,8 @@ export default class extends Controller {
             default: createDivIcon('gray')
         };
 
-        // CLUSTER LIB POUR REGROUP LES MARQUEURS ENTRE EUX
-        // Créer un seul groupe de clusters (Cluster lib)
-        const mainClusterGroup = L.markerClusterGroup({
-            showCoverageOnHover: false,
-            maxClusterRadius: 80,
-            spiderfyOnMaxZoom: true
-        });
+        // Créer un groupe de clusters
+        const mainClusterGroup = L.markerClusterGroup(CLUSTER_OPTIONS);
         this.markersByType = {};
 
         validFacilities.forEach(facility => {
@@ -178,11 +196,7 @@ export default class extends Controller {
                 this.map.removeLayer(this.mainClusterGroup);
             }
 
-            const mainClusterGroup = L.markerClusterGroup({
-                showCoverageOnHover: false,
-                maxClusterRadius: 80,
-                spiderfyOnMaxZoom: true
-            });
+            const mainClusterGroup = L.markerClusterGroup(CLUSTER_OPTIONS);
 
             if (selectedType) {
                 const markersOfType = this.markersByType[selectedType] || [];
@@ -200,6 +214,7 @@ export default class extends Controller {
             this.loadFacilities(selectedType);
         }
     }
+
     // Fonction pour reset les filtres sur le template
     resetFilters() {
         this.typeFilterTargets.forEach(radio => {
@@ -210,11 +225,7 @@ export default class extends Controller {
             if (this.mainClusterGroup) {
                 this.map.removeLayer(this.mainClusterGroup);
             }
-            const mainClusterGroup = L.markerClusterGroup({
-                showCoverageOnHover: false,
-                maxClusterRadius: 80,
-                spiderfyOnMaxZoom: true
-            });
+            const mainClusterGroup = L.markerClusterGroup(CLUSTER_OPTIONS);
 
             Object.values(this.markersByType).flat().forEach(marker => {
                 mainClusterGroup.addLayer(marker);
