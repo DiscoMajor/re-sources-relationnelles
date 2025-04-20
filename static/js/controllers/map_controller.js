@@ -62,15 +62,13 @@ export default class extends Controller {
             this.map.setView([latitude, longitude], zoom);
         }
     }
-
+    // Markerr pour l'adresse recherchée
     addAddressMarker(latitude, longitude, label) {
         if (this.addressMarker) {
             this.map.removeLayer(this.addressMarker);
         }
-
-        // Markerr pour l'adresse recherchée (sans popup atm)
         const addressIcon = L.divIcon({
-            html: `<div style="background-color: #3b82f6; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white;"></div>`,
+            html: `<div style="background-color: #8b5cf6; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white;"></div>`,
             className: 'custom-div-icon',
             iconSize: [14, 14],
             iconAnchor: [7, 7]
@@ -78,6 +76,10 @@ export default class extends Controller {
 
         this.addressMarker = L.marker([latitude, longitude], { icon: addressIcon })
             .addTo(this.map);
+            
+        if (label) {
+            this.addressMarker.bindPopup(label).openPopup();
+        }
     }
 
     async loadFacilities(type = null) {
