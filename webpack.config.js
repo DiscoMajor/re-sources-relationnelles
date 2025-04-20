@@ -1,5 +1,4 @@
 const path = require('path');
-
 module.exports = {
     entry: './static/js/application.js',
     output: {
@@ -17,7 +16,17 @@ module.exports = {
                         presets: ['@babel/preset-env']
                     }
                 }
+            },
+            {
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader']
             }
+        ]
+    },
+    resolve: {
+        modules: [
+            path.resolve(__dirname, 'node_modules'),
+            'node_modules'
         ]
     }
 };
