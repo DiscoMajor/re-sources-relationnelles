@@ -16,3 +16,7 @@ db.sqlite3
 # Node.js et Tailwind
 node_modules/
 static/css/output.css
+
+# Ignorer les fichiers générés
+static/dist/bundle.js
+static/dist/bundle.js.LICENSE.txt
