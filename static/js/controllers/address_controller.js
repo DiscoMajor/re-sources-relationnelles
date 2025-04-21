@@ -9,7 +9,16 @@ export default class extends Controller {
     connect() {
         console.log("📍 AddressController connected");
         this.initTomSelect();
+        this.connectToMapController();
+    }
 
+    disconnect() {
+        if (this.tomSelect) {
+            this.tomSelect.destroy();
+        }
+    }
+
+    connectToMapController() {
         setTimeout(() => {
             const mapElement = document.querySelector("[data-controller='map']");
             if (mapElement) {
@@ -23,27 +32,21 @@ export default class extends Controller {
         }, 100);
     }
 
-    disconnect() {
-        if (this.tomSelect) {
-            this.tomSelect.destroy();
-        }
-    }
-
     initTomSelect() {
-        // Configuration de TomSelect le bon vieux TomSelect
         this.tomSelect = new TomSelect(this.inputTarget, {
             valueField: 'coordinates',
             labelField: 'label',
             searchField: 'label',
             create: false,
             persist: false,
+            placeholder: "Rechercher une adresse...",
             render: {
                 option: function (item, escape) {
                     return `<div class="py-2 px-3 border-b border-gray-100">
                         <div class="font-medium">${escape(item.label)}</div>
                         <div class="text-xs text-gray-500">
-                            ${item.type ? `${escape(item.type)}` : ''}
-                            ${item.city ? `- ${escape(item.city)}` : ''}
+                        <div class="text-xs text-gray-500">
+                            ${item.city ? escape(item.city) : ''} 
                             ${item.postcode ? escape(item.postcode) : ''}
                         </div>
                     </div>`;
@@ -62,48 +65,60 @@ export default class extends Controller {
                 this.setTextboxValue('');
                 this.refreshOptions();
             },
-            load: (query, callback) => {
-                if (!query.length || query.length < 3) return callback();
-                searchAddress(query)
-                    .then(result => {
-                        if (!result.features || !result.features.length) {
-                            return callback();
-                        }
-                        const options = result.features.map(feature => {
-                            const coords = feature.geometry.coordinates;
-                            const props = feature.properties;
-                            return {
-                                label: props.label,
-                                type: props.type,
-                                city: props.city,
-                                postcode: props.postcode,
-                                coordinates: [coords[1], coords[0]],
-                                originalFeature: feature
-                            };
-                        });
-                        callback(options);
-                    })
-                    .catch(error => {
-                        console.error("Erreur lors de la recherche d'adresse:", error);
-                        callback();
-                    });
-            },
-            onChange: (value) => {
-                if (!value) return;
-                const selectedItem = this.tomSelect.options[value];
-                if (selectedItem) {
-                    if (this.mapController) {
-                        const [latitude, longitude] = selectedItem.coordinates;
-                        this.mapController.centerMapOnCoordinates(latitude, longitude);
-                        this.mapController.addAddressMarker(latitude, longitude, selectedItem.label);
-                    }
-                    if (selectedItem.originalFeature) {
-                        this.saveSearch(selectedItem.originalFeature);
-                    }
-                    this.tomSelect.clear(true);
-                }
-            }
+            load: this.handleAddressSearch.bind(this),
+            onChange: this.handleAddressSelection.bind(this)
         });
+    }
+
+    async handleAddressSearch(query, callback) {
+        if (!query.length || query.length < 3) return callback();
+
+        try {
+            const result = await searchAddress(query);
+
+            if (!result.features || !result.features.length) {
+                return callback();
+            }
+
+            const options = result.features.map(feature => {
+                const coords = feature.geometry.coordinates;
+                const props = feature.properties;
+                return {
+                    label: props.label,
+                    type: props.type,
+                    city: props.city,
+                    postcode: props.postcode,
+                    coordinates: [coords[1], coords[0]],
+                    originalFeature: feature
+                };
+            });
+
+            callback(options);
+        } catch (error) {
+            console.error("Erreur lors de la recherche d'adresse:", error);
+            callback();
+        }
+    }
+
+    handleAddressSelection(value) {
+        if (!value) return;
+
+        const selectedItem = this.tomSelect.options[value];
+        if (selectedItem) {
+            if (this.mapController) {
+                const [latitude, longitude] = selectedItem.coordinates;
+                this.mapController.centerMapOnCoordinates(latitude, longitude);
+                this.mapController.addAddressMarker(latitude, longitude, selectedItem.label);
+            }
+
+            if (selectedItem.originalFeature) {
+                this.saveSearch(selectedItem.originalFeature);
+            }
+
+            this.tomSelect.clear(true);
+            this.tomSelect.close();
+            this.tomSelect.blur();
+        }
     }
 
     saveSearch(feature) {
@@ -140,7 +155,7 @@ export default class extends Controller {
             console.error("Erreur lors de l'enregistrement de la recherche:", error);
         });
     }
-    
+
     getCsrfToken() {
         return this.formTarget.querySelector('input[name="csrfmiddlewaretoken"]').value;
     }

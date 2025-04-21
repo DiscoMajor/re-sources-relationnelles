@@ -15,6 +15,16 @@ const CLUSTER_OPTIONS = {
     spiderfyOnMaxZoom: true
 };
 
+const FACILITY_ICONS = {
+    hospital: 'red',
+    pharmacy: 'green',
+    doctors: 'blue',
+    clinic: 'orange',
+    default: 'gray'
+};
+
+const ADDRESS_MARKER_COLOR = '#8b5cf6'; // Violet
+
 export default class extends Controller {
     static targets = ["container", "typeFilter"];
     static values = {
@@ -25,7 +35,18 @@ export default class extends Controller {
 
     connect() {
         console.log("🗺️ MapController connected");
+        this.initMap();
+        this.loadFacilities();
+    }
 
+    disconnect() {
+        if (this.map) {
+            this.map.remove();
+            this.map = undefined;
+        }
+    }
+
+    initMap() {
         const latitude = this.hasLatitudeValue ? this.latitudeValue : DEFAULT_COORDINATES.PARIS.lat;
         const longitude = this.hasLongitudeValue ? this.longitudeValue : DEFAULT_COORDINATES.PARIS.lng;
         const zoom = this.hasZoomValue ? this.zoomValue : DEFAULT_COORDINATES.PARIS.zoom;
@@ -40,21 +61,13 @@ export default class extends Controller {
 
         L.control.scale({ imperial: false }).addTo(this.map);
 
+        // Fix pour le problème de rendu initial de Leaflet
         setTimeout(() => {
             this.map.invalidateSize();
         }, 0);
 
         this.mainClusterGroup = null;
         this.markersByType = {};
-
-        this.loadFacilities();
-    }
-
-    disconnect() {
-        if (this.map) {
-            this.map.remove();
-            this.map = undefined;
-        }
     }
 
     centerMapOnCoordinates(latitude, longitude, zoom = 16) {
@@ -62,13 +75,14 @@ export default class extends Controller {
             this.map.setView([latitude, longitude], zoom);
         }
     }
-    // Markerr pour l'adresse recherchée
+
     addAddressMarker(latitude, longitude, label) {
         if (this.addressMarker) {
             this.map.removeLayer(this.addressMarker);
         }
+
         const addressIcon = L.divIcon({
-            html: `<div style="background-color: #8b5cf6; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white;"></div>`,
+            html: `<div style="background-color: ${ADDRESS_MARKER_COLOR}; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white;"></div>`,
             className: 'custom-div-icon',
             iconSize: [14, 14],
             iconAnchor: [7, 7]
@@ -76,7 +90,7 @@ export default class extends Controller {
 
         this.addressMarker = L.marker([latitude, longitude], { icon: addressIcon })
             .addTo(this.map);
-            
+
         if (label) {
             this.addressMarker.bindPopup(label).openPopup();
         }
@@ -94,7 +108,7 @@ export default class extends Controller {
     displayFacilities(facilities) {
         this.clearMarkers();
 
-        // Filtrer les établissements avec des coordonnées valides (revoir ça car c'est pas super propre et que je skip certains etablissements)
+        // Filtrer les établissements avec des coordonnées valides
         const validFacilities = facilities.filter(f =>
             f.latitude && f.longitude &&
             !isNaN(f.latitude) && !isNaN(f.longitude)
@@ -112,13 +126,9 @@ export default class extends Controller {
             iconAnchor: [6, 6]
         });
 
-        const icons = {
-            hospital: createDivIcon('red'),
-            pharmacy: createDivIcon('green'),
-            doctors: createDivIcon('blue'),
-            clinic: createDivIcon('orange'),
-            default: createDivIcon('gray')
-        };
+        const icons = Object.fromEntries(
+            Object.entries(FACILITY_ICONS).map(([type, color]) => [type, createDivIcon(color)])
+        );
 
         // Créer un groupe de clusters
         const mainClusterGroup = L.markerClusterGroup(CLUSTER_OPTIONS);
@@ -136,6 +146,7 @@ export default class extends Controller {
             this.markersByType[facility.type].push(marker);
             mainClusterGroup.addLayer(marker);
         });
+
         this.map.addLayer(mainClusterGroup);
         this.mainClusterGroup = mainClusterGroup;
     }
@@ -193,28 +204,34 @@ export default class extends Controller {
     // Filtrage des types d'établissements
     filterFacilities(event) {
         const selectedType = event.currentTarget.value;
+
         if (this.markersByType && Object.keys(this.markersByType).length > 0) {
-            if (this.mainClusterGroup) {
-                this.map.removeLayer(this.mainClusterGroup);
-            }
-
-            const mainClusterGroup = L.markerClusterGroup(CLUSTER_OPTIONS);
-
-            if (selectedType) {
-                const markersOfType = this.markersByType[selectedType] || [];
-                markersOfType.forEach(marker => {
-                    mainClusterGroup.addLayer(marker);
-                });
-            } else {
-                Object.values(this.markersByType).flat().forEach(marker => {
-                    mainClusterGroup.addLayer(marker);
-                });
-            }
-            this.map.addLayer(mainClusterGroup);
-            this.mainClusterGroup = mainClusterGroup;
+            this.updateMarkerDisplay(selectedType);
         } else {
             this.loadFacilities(selectedType);
         }
+    }
+
+    updateMarkerDisplay(selectedType = '') {
+        if (this.mainClusterGroup) {
+            this.map.removeLayer(this.mainClusterGroup);
+        }
+
+        const mainClusterGroup = L.markerClusterGroup(CLUSTER_OPTIONS);
+
+        if (selectedType) {
+            const markersOfType = this.markersByType[selectedType] || [];
+            markersOfType.forEach(marker => {
+                mainClusterGroup.addLayer(marker);
+            });
+        } else {
+            Object.values(this.markersByType).flat().forEach(marker => {
+                mainClusterGroup.addLayer(marker);
+            });
+        }
+
+        this.map.addLayer(mainClusterGroup);
+        this.mainClusterGroup = mainClusterGroup;
     }
 
     // Fonction pour reset les filtres sur le template
@@ -224,17 +241,7 @@ export default class extends Controller {
         });
 
         if (this.markersByType && Object.keys(this.markersByType).length > 0) {
-            if (this.mainClusterGroup) {
-                this.map.removeLayer(this.mainClusterGroup);
-            }
-            const mainClusterGroup = L.markerClusterGroup(CLUSTER_OPTIONS);
-
-            Object.values(this.markersByType).flat().forEach(marker => {
-                mainClusterGroup.addLayer(marker);
-            });
-
-            this.map.addLayer(mainClusterGroup);
-            this.mainClusterGroup = mainClusterGroup;
+            this.updateMarkerDisplay();
         } else {
             this.loadFacilities();
         }
