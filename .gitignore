@@ -17,6 +17,7 @@ db.sqlite3
 node_modules/
 static/css/output.css
 
+
 # Ignorer les fichiers générés par Webpack
 static/dist/bundle.js
 static/dist/bundle.js.LICENSE.txt
