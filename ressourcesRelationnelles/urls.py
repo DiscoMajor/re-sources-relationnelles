@@ -29,4 +29,5 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='index.html'), name='index'),
     path('', include('pwa.urls')),
     path('cartography/', include('cartography.urls', namespace='cartography')),
+    path('videoconference/', include('videoconference.urls', namespace='videoconference')),
 ]

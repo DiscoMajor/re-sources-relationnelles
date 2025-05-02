@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Visioconf{% endblock %}
+
+{% block extra_css %}
+    <style>
+      video {
+          width: 300px;
+          margin: 10px;
+          border-radius: 8px;
+          border: 1px solid #ccc;
+      }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h2>Welcome to the video chat !</h2>
+    <label>Nom d'utilisateur : </label>
+    <input type='text' id='username' placeholder='Entrez votre pseudo' />
+    <button id='start-button'>Rejoindre la salle</button>
+
+    <div id="videos">
+        <h2>Caméras</h2>
+    </div>
+{% endblock %}
+{% block extra_js %}
+    <script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
+    <script src='{% static 'js/videochat.js' %}'></script>
+{% endblock %}
