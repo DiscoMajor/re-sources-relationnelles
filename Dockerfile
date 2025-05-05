@@ -21,7 +21,11 @@ COPY package*.json ./
 
 # Installe les dépendances Node.js, y compris les outils de build (leaflet, tailwindcss, stimulus)
 RUN npm install -D tailwindcss@latest postcss autoprefixer leaflet @hotwired/stimulus \
-    webpack webpack-cli babel-loader @babel/core @babel/preset-env
+    webpack webpack-cli babel-loader @babel/core @babel/preset-env \
+    style-loader css-loader
+
+# Installer Tom Select
+RUN npm install tom-select
 
 # Copie le reste des fichiers de l'application
 COPY . .

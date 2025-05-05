@@ -6,35 +6,119 @@
 {% block extra_css %}
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""/>
-
+        crossorigin=""/>
+<!-- MarkerCluster CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
 <style>
     .map-container {
         height: 100%;
         width: 100%;
     }
+    .custom-div-icon {
+        background: none;
+        border: none;
+    }
+        [data-controller="address"] {
+            @apply relative z-50;
+        }
+        
+        /* Style pour le dropdown de Tom Select */
+        .ts-dropdown {
+            z-index: 999 !important;
+        }
+        
+        /* Assurer que la carte reste à un z-index inférieur */
+        .leaflet-container {
+            z-index: 10;
+        }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container mx-auto p-4">
-    <h1 class="text-2xl font-bold text-gray-800 mb-4">Carte</h1>
-    
+    <h1 class="text-2xl font-bold text-gray-800 mb-4">Carte des établissements de santé</h1>
+
+    <!-- Ce bon vieux tom select -->
+    <div data-controller="address" class="mb-4 relative z-50">
+        <form data-address-target="form" class="flex" onsubmit="return false;">
+            {% csrf_token %}
+            <div class="w-full">
+                <input type="text" 
+                        data-address-target="input" 
+                        placeholder="Rechercher une adresse..." 
+                        />
+            </div>
+        </form>
+    </div>
+
     <div data-controller="map" class="flex flex-col lg:flex-row gap-4 h-[600px]">
         <div class="w-full lg:w-3/4 bg-white rounded-lg shadow-md overflow-hidden">
-            <div data-map-target="container" 
+            <div data-map-target="container"
                 data-map-latitude-value="48.856614"
                 data-map-longitude-value="2.3522219"
-                data-map-zoom-value="13"
+                data-map-zoom-value="12"
                 class="map-container rounded-lg"></div>
         </div>
-        
-        <!-- Panneau latéral pour les filtres -->
+
+        <!-- filtres -->
         <div class="w-full lg:w-1/4 bg-white rounded-lg shadow-md p-4">
             <h2 class="text-xl font-semibold text-gray-700 mb-4">Filtres</h2>
-            <!-- Contenu des filtres à venir plus tard -->
-            <p class="text-gray-500 text-sm">Les filtres seront ajoutés ultérieurement.</p>
+            
+            <div class="space-y-2">
+                {% for type in facility_types %}
+                <div class="flex items-center">
+                    <input id="type-{{ type.value|default:'all' }}" 
+                            type="radio" 
+                            name="facility-type" 
+                            value="{{ type.value }}"
+                            data-map-target="typeFilter" 
+                            data-action="click->map#filterFacilities"
+                            {% if not type.value %}checked{% endif %}
+                            class="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300">
+                    <label for="type-{{ type.value|default:'all' }}" 
+                            class="ml-2 text-sm text-gray-700">
+                        {{ type.emoji }} {{ type.label }}
+                    </label>
+                </div>
+                {% endfor %}
+            </div>
+                
+                <!-- Légende -->
+                <div class="mt-4 p-3 bg-gray-50 rounded-md">
+                    <h3 class="text-sm font-medium text-gray-700 mb-2">Légende</h3>
+                    <div class="space-y-1 text-xs text-gray-600">
+                        <div class="flex items-center">
+                            <span class="inline-block w-3 h-3 rounded-full bg-red-600 mr-2"></span>
+                            <span>Hôpitaux</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="inline-block w-3 h-3 rounded-full bg-green-600 mr-2"></span>
+                            <span>Pharmacies</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="inline-block w-3 h-3 rounded-full bg-blue-600 mr-2"></span>
+                            <span>Médecins</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="inline-block w-3 h-3 rounded-full bg-orange-500 mr-2"></span>
+                            <span>Cliniques</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="inline-block w-3 h-3 rounded-full bg-purple-500 mr-2"></span>
+                            <span>Adresse recherchée</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <button data-action="click->map#resetFilters" 
+                            class="w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+                        Réinitialiser les filtres
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -44,7 +128,8 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
         crossorigin=""></script>
-
+<!-- MarkerCluster JS -->
+<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
 <!-- Bundle généré par webpack -->
 <script src="{% static 'dist/bundle.js' %}"></script>
 {% endblock %}
