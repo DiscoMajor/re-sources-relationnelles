@@ -1,16 +1,14 @@
 {% load static %}
-
 {% block title %}Mes Conversations{% endblock %}
-
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-900">Mes Conversations</h1>
         <a href="{% url 'chat:create_room' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700">
-            Nouvelle conversation
+            Nouveau groupe
         </a>
     </div>
-    
+   
     {% if rooms %}
         <div class="bg-white shadow overflow-hidden sm:rounded-md">
             <ul class="divide-y divide-gray-200">
@@ -58,7 +56,7 @@
         <div class="bg-white shadow overflow-hidden sm:rounded-md p-6 text-center">
             <p class="text-gray-500">Vous n'avez pas encore de conversations.</p>
             <p class="mt-2">
-                <a href="{% url 'chat:create_room' %}" class="text-teal-600 hover:text-teal-500">Créer une nouvelle conversation</a>
+                <a href="{% url 'chat:create_room' %}" class="text-teal-600 hover:text-teal-500">Créer un nouveau groupe</a> ou ajoutez des relations depuis votre profil pour créer automatiquement des conversations.
             </p>
         </div>
     {% endif %}

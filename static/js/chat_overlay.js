@@ -52,117 +52,110 @@ document.addEventListener('DOMContentLoaded', function() {
                         showRoomsList();
                     });
                 }
-                
-                // Toggle pour le type de conversation
-                const isGroupCheckbox = createRoomView.querySelector('#is_group');
-                if (isGroupCheckbox) {
-                    isGroupCheckbox.addEventListener('change', toggleParticipantsSection);
-                }
             }
             
             // Afficher la vue
             roomsListView.classList.add('hidden');
             createRoomView.classList.remove('hidden');
             roomView.classList.add('hidden');
-            overlayTitle.textContent = 'Nouvelle Conversation';
+            overlayTitle.textContent = 'Nouveau Groupe';
         } catch (error) {
             console.error('Erreur:', error);
             alert('Une erreur est survenue lors du chargement du formulaire');
         }
     }
     
-    // Afficher une conversation
-    async function showRoom(roomId) {
-        try {
-            // Charger le contenu de la conversation via AJAX
-            const response = await fetch(`/chat/room/${roomId}/`, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+// Afficher une conversation
+async function showRoom(roomId) {
+    try {
+        // Charger le contenu de la conversation via AJAX
+        const response = await fetch(`/chat/room/${roomId}/`, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+        
+        if (!response.ok) throw new Error('Erreur lors du chargement de la conversation');
+        
+        const html = await response.text();
+        roomView.innerHTML = html;
+        
+        // Afficher la vue
+        roomsListView.classList.add('hidden');
+        createRoomView.classList.add('hidden');
+        roomView.classList.remove('hidden');
+        
+        // Marquer les messages comme lus
+        markMessagesAsRead(roomId);
+        
+        // Configurer le WebSocket
+        setupWebSocket(roomId);
+        
+        // Ajouter un bouton de retour si nécessaire
+        const closeBtn = roomView.querySelector('a[href*="/chat/rooms/"]');
+        if (closeBtn) {
+            closeBtn.href = '#';
+            closeBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showRoomsList();
+            });
+        }
+        
+        // Ajouter la gestion du bouton de suppression
+        const deleteBtn = roomView.querySelector('#delete-room-btn');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', async function(e) {
+                e.preventDefault();
+                
+                // Confirmation avant suppression
+                if (confirm('Êtes-vous sûr de vouloir supprimer cette conversation ? Cette action est irréversible.')) {
+                    const roomId = this.getAttribute('data-room-id');
+                    
+                    try {
+                        const response = await fetch(`/chat/delete/${roomId}/`, {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+                        
+                        if (!response.ok) {
+                            const errorData = await response.json();
+                            throw new Error(errorData.error || 'Erreur lors de la suppression de la conversation');
+                        }
+                        
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            // Retourner à la liste des conversations après la suppression
+                            await loadChatRooms(); // Recharger la liste pour qu'elle soit à jour
+                            showRoomsList();
+                            
+                            // Afficher un message de confirmation (optionnel)
+                            alert(data.message || 'Conversation supprimée avec succès');
+                        } else {
+                            alert(data.error || 'Une erreur est survenue');
+                        }
+                    } catch (error) {
+                        console.error('Erreur:', error);
+                        alert(error.message || 'Une erreur est survenue lors de la suppression de la conversation');
+                    }
                 }
             });
-            
-            if (!response.ok) throw new Error('Erreur lors du chargement de la conversation');
-            
-            const html = await response.text();
-            roomView.innerHTML = html;
-            
-            // Afficher la vue
-            roomsListView.classList.add('hidden');
-            createRoomView.classList.add('hidden');
-            roomView.classList.remove('hidden');
-            overlayTitle.textContent = 'Conversation';
-            
-            // Marquer les messages comme lus
-            markMessagesAsRead(roomId);
-            
-            // Configurer le WebSocket
-            setupWebSocket(roomId);
-            
-            // Ajouter un bouton de retour si nécessaire
-            const closeBtn = roomView.querySelector('a[href*="/chat/rooms/"]');
-            if (closeBtn) {
-                closeBtn.href = '#';
-                closeBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    showRoomsList();
-                });
-            }
-            
-            // Ajouter la gestion du bouton de suppression
-            const deleteBtn = roomView.querySelector('#delete-room-btn');
-            if (deleteBtn) {
-                deleteBtn.addEventListener('click', async function(e) {
-                    e.preventDefault();
-                    
-                    // Confirmation avant suppression
-                    if (confirm('Êtes-vous sûr de vouloir supprimer cette conversation ? Cette action est irréversible.')) {
-                        const roomId = this.getAttribute('data-room-id');
-                        
-                        try {
-                            const response = await fetch(`/chat/delete/${roomId}/`, {
-                                headers: {
-                                    'X-Requested-With': 'XMLHttpRequest'
-                                }
-                            });
-                            
-                            if (!response.ok) {
-                                const errorData = await response.json();
-                                throw new Error(errorData.error || 'Erreur lors de la suppression de la conversation');
-                            }
-                            
-                            const data = await response.json();
-                            
-                            if (data.success) {
-                                // Retourner à la liste des conversations après la suppression
-                                await loadChatRooms(); // Recharger la liste pour qu'elle soit à jour
-                                showRoomsList();
-                                
-                                // Afficher un message de confirmation (optionnel)
-                                alert(data.message || 'Conversation supprimée avec succès');
-                            } else {
-                                alert(data.error || 'Une erreur est survenue');
-                            }
-                        } catch (error) {
-                            console.error('Erreur:', error);
-                            alert(error.message || 'Une erreur est survenue lors de la suppression de la conversation');
-                        }
-                    }
-                });
-            }
-            
-            // Intercepter le formulaire d'envoi de message
-            const chatForm = roomView.querySelector('#chat-form');
-            if (chatForm) {
-                chatForm.addEventListener('submit', handleChatFormSubmit);
-            }
-            
-            // Faire défiler jusqu'au dernier message
-            scrollToBottom();
-        } catch (error) {
-            console.error('Erreur:', error);
-            alert('Une erreur est survenue lors du chargement de la conversation');
         }
+        
+        // Intercepter le formulaire d'envoi de message
+        const chatForm = roomView.querySelector('#chat-form');
+        if (chatForm) {
+            chatForm.addEventListener('submit', handleChatFormSubmit);
+        }
+        
+        // Faire défiler jusqu'au dernier message
+        scrollToBottom();
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Une erreur est survenue lors du chargement de la conversation');
     }
+}
     
     // ===== Gestionnaires d'événements =====
     
@@ -184,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.error || 'Erreur lors de la création de la conversation');
+                throw new Error(errorData.error || 'Erreur lors de la création du groupe');
             }
             
             const data = await response.json();
@@ -198,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Erreur:', error);
-            alert(error.message || 'Une erreur est survenue lors de la création de la conversation');
+            alert(error.message || 'Une erreur est survenue lors de la création du groupe');
         }
     }
     
@@ -218,21 +211,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         messageInput.focus();
-    }
-    
-    // Toggle pour afficher/masquer la section participants
-    function toggleParticipantsSection() {
-        const isGroup = document.getElementById('is_group').checked;
-        const participantsSection = document.getElementById('participants-section');
-        const directChatSection = document.getElementById('direct-chat-section');
-        
-        if (isGroup) {
-            participantsSection.classList.remove('hidden');
-            directChatSection.classList.add('hidden');
-        } else {
-            participantsSection.classList.add('hidden');
-            directChatSection.classList.remove('hidden');
-        }
     }
     
     // ===== Fonctions utilitaires =====
@@ -304,7 +282,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });
             
-            // Bouton Nouvelle conversation
+            // Bouton Nouveau groupe
             const newConversationBtns = roomsListView.querySelectorAll('a[href="/chat/create/"]');
             newConversationBtns.forEach(btn => {
                 btn.addEventListener('click', function(e) {
@@ -393,12 +371,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const hours = date.getHours().toString().padStart(2, '0');
         const minutes = date.getMinutes().toString().padStart(2, '0');
         
-        // Créer le HTML du message
+        // Créer le HTML du message - Utiliser les nouvelles classes CSS
         const messageDiv = document.createElement('div');
         messageDiv.className = `mb-4 flex ${isMyMessage ? 'justify-end' : ''}`;
         
         const messageBubble = document.createElement('div');
-        messageBubble.className = `message-bubble p-3 ${isMyMessage ? 'my-message' : 'other-message'}`;
+        messageBubble.className = `chat-message-bubble p-3 ${isMyMessage ? 'chat-my-message' : 'chat-other-message'}`;
         
         // Ajouter le nom de l'expéditeur pour les conversations de groupe
         const isGroup = roomView.querySelector('div[data-is-group="true"]') !== null;
@@ -483,138 +461,164 @@ document.addEventListener('DOMContentLoaded', function() {
     checkUnreadMessages();
     setInterval(checkUnreadMessages, 30000);
 
-    // Fonction pour gérer la visibilité des sections de participants
-    function toggleParticipantsSection() {
-        const isGroup = document.getElementById('is_group').checked;
-        const participantsSection = document.getElementById('participants-section');
-        const directChatSection = document.getElementById('direct-chat-section');
-        
-        if (isGroup) {
-            participantsSection.classList.remove('hidden');
-            directChatSection.classList.add('hidden');
-        } else {
-            participantsSection.classList.add('hidden');
-            directChatSection.classList.remove('hidden');
-            
-            // Mettre à jour la liste des utilisateurs dans le select (retirer ceux avec qui on a déjà une room)
-            updateUserSelect();
-        }
-    }
-
-    // Fonction pour mettre à jour la liste des utilisateurs disponibles dans le select
-    async function updateUserSelect() {
-        try {
-            // Récupérer la liste des utilisateurs avec qui on a déjà une conversation
-            const response = await fetch('/chat/existing-chats/', {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            });
-            
-            if (!response.ok) throw new Error('Erreur lors de la récupération des conversations existantes');
-            
-            const data = await response.json();
-            const existingChatUsers = data.existing_users || [];
-            
-            // Mettre à jour le select en masquant les options correspondant aux utilisateurs avec conversation existante
-            const userSelect = document.querySelector('select[name="participants"]');
-            
-            if (userSelect) {
-                // Réactiver toutes les options d'abord
-                Array.from(userSelect.options).forEach(option => {
-                    if (option.value) { // Ignorer l'option vide
-                        option.disabled = false;
-                        option.classList.remove('text-gray-400');
-                    }
-                });
-                
-                // Désactiver les options pour les utilisateurs avec conversation existante
-                existingChatUsers.forEach(userId => {
-                    const option = userSelect.querySelector(`option[value="${userId}"]`);
-                    if (option) {
-                        option.disabled = true;
-                        option.classList.add('text-gray-400');
-                    }
-                });
+    // Fonctions pour la gestion d'une room individuelle
+    function setupRoomFunctions(roomId, userId, userName) {
+        // Scroll to bottom of message container
+        function scrollToBottom() {
+            const messageContainer = document.getElementById('message-container');
+            if (messageContainer) {
+                messageContainer.scrollTop = messageContainer.scrollHeight;
             }
-        } catch (error) {
-            console.error('Erreur:', error);
-        }
-    }
-
-    // Fonction pour valider le formulaire avant soumission
-    function validateForm(event) {
-        const form = event.target;
-        const isGroup = document.getElementById('is_group').checked;
-        let isValid = true;
-        
-        // Réinitialiser les messages d'erreur précédents
-        const errorMessages = form.querySelectorAll('.error-message');
-        errorMessages.forEach(el => el.remove());
-        
-        // Vérifier qu'un nom est fourni
-        const roomNameInput = document.getElementById('room_name');
-        if (!roomNameInput.value.trim()) {
-            displayError(roomNameInput, 'Le nom de la conversation est requis');
-            isValid = false;
         }
         
-        if (isGroup) {
-            // Pour les groupes, vérifier qu'au moins 2 participants sont sélectionnés
-            const selectedParticipants = Array.from(
-                form.querySelectorAll('input[name="participants"]:checked')
+        // Add message to chat
+        function addMessage(message, user_id, username, timestamp) {
+            const messageContainer = document.getElementById('message-container');
+            if (!messageContainer) return;
+            
+            const isMyMessage = user_id === userId;
+            
+            // Format timestamp
+            const date = new Date(timestamp);
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            
+            // Create message HTML
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `mb-4 flex ${isMyMessage ? 'justify-end' : ''}`;
+            
+            const messageBubble = document.createElement('div');
+            messageBubble.className = `message-bubble p-3 ${isMyMessage ? 'my-message' : 'other-message'}`;
+            
+            // Add sender name for group chats if not my message
+            const isGroup = document.querySelector('div[data-is-group="true"]') !== null;
+            if (!isMyMessage && isGroup) {
+                const nameElement = document.createElement('p');
+                nameElement.className = 'text-xs text-gray-600 mb-1';
+                nameElement.textContent = username;
+                messageBubble.appendChild(nameElement);
+            }
+            
+            // Message content
+            const messageContent = document.createElement('p');
+            messageContent.className = 'text-gray-800';
+            messageContent.textContent = message;
+            messageBubble.appendChild(messageContent);
+            
+            // Timestamp
+            const timeElement = document.createElement('p');
+            timeElement.className = 'text-xs text-gray-500 text-right mt-1';
+            timeElement.textContent = `${hours}:${minutes}`;
+            messageBubble.appendChild(timeElement);
+            
+            messageDiv.appendChild(messageBubble);
+            messageContainer.appendChild(messageDiv);
+            
+            // Scroll to the latest message
+            scrollToBottom();
+        }
+        
+        // Connect to WebSocket
+        function connectWebSocket() {
+            const chatSocket = new WebSocket(
+                'ws://' + window.location.host + '/ws/chat/' + roomId + '/'
             );
+
+            chatSocket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                addMessage(data.message, data.user_id, data.username, data.timestamp);
+            };
+
+            chatSocket.onclose = function(e) {
+                console.error('Chat socket closed unexpectedly');
+                // Try to reconnect in 5 seconds
+                setTimeout(function() {
+                    connectWebSocket();
+                }, 5000);
+            };
             
-            if (selectedParticipants.length < 2) {
-                const participantsSection = document.getElementById('participants-section');
-                displayError(participantsSection, 'Sélectionnez au moins 2 participants pour un groupe');
-                isValid = false;
-            }
-        } else {
-            // Pour les conversations directes, vérifier qu'un utilisateur est sélectionné
-            const userSelect = form.querySelector('select[name="participants"]');
-            
-            if (!userSelect.value) {
-                userSelect.classList.add('border-red-500', 'ring-red-500');
-                displayError(userSelect, 'Veuillez sélectionner un participant');
-                isValid = false;
+            return chatSocket;
+        }
+        
+        // Marquer les messages comme lus
+        async function markMessagesAsRead() {
+            try {
+                await fetch(`/chat/mark-read/${roomId}/`);
+            } catch (error) {
+                console.error('Erreur lors du marquage des messages comme lus:', error);
             }
         }
         
-        if (!isValid) {
-            event.preventDefault();
+        // Initialiser la room
+        function initRoom() {
+            let chatSocket = null;
+            
+            // Connect to WebSocket
+            chatSocket = connectWebSocket();
+            
+            // Scroll to bottom when page loads
+            scrollToBottom();
+            
+            // Marquer les messages comme lus
+            markMessagesAsRead();
+            
+            // Handle form submission
+            const chatForm = document.getElementById('chat-form');
+            if (chatForm) {
+                chatForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const messageInput = document.getElementById('message-input');
+                    const message = messageInput.value.trim();
+                    
+                    if (message && chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+                        chatSocket.send(JSON.stringify({
+                            'message': message
+                        }));
+                        
+                        messageInput.value = '';
+                    }
+                    
+                    messageInput.focus();
+                });
+            }
         }
+        
+        // Lancer l'initialisation
+        initRoom();
     }
 
-    // Fonction pour afficher un message d'erreur
-    function displayError(element, message) {
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'text-red-500 text-sm mt-1 error-message';
-        errorDiv.textContent = message;
-        
-        if (element.tagName === 'SELECT') {
-            element.classList.add('border-red-500', 'ring-red-500');
-        }
-        
-        element.parentNode.appendChild(errorDiv);
+    // Étendre la fonction showRoom pour initialiser la room
+    function enhanceShowRoom(originalShowRoom) {
+        return async function(roomId) {
+            // Appeler la fonction originale
+            await originalShowRoom(roomId);
+            
+            // Récupérer les données utilisateur
+            const metaUserId = document.querySelector('meta[name="user-id"]');
+            const userId = metaUserId ? parseInt(metaUserId.content) : 0;
+            const userName = document.querySelector('meta[name="user-name"]')?.content || '';
+            
+            // Initialiser les fonctions spécifiques à la room
+            setupRoomFunctions(roomId, userId, userName);
+            
+            // Mise à jour du titre de l'overlay
+            const conversationName = roomView.querySelector('.text-lg.font-medium.text-gray-900')?.textContent;
+            if (conversationName && overlayTitle) {
+                overlayTitle.textContent = conversationName;
+            }
+        };
     }
 
-    // Initialisation après chargement du DOM
+    // Surcharger la fonction showRoom une fois que le DOM est chargé
     document.addEventListener('DOMContentLoaded', function() {
-        const createRoomForm = document.querySelector('form[action*="create_room"]');
-        
-        if (createRoomForm) {
-            // Ajouter la validation au formulaire
-            createRoomForm.addEventListener('submit', validateForm);
+        // Vérifier si la fonction showRoom existe
+        if (typeof window.showRoom === 'function') {
+            // Sauvegarder la fonction originale
+            const originalShowRoom = window.showRoom;
             
-            // Configurer le changement de type de conversation
-            const isGroupCheckbox = document.getElementById('is_group');
-            if (isGroupCheckbox) {
-                isGroupCheckbox.addEventListener('change', toggleParticipantsSection);
-                
-                // Initialiser la visibilité des sections
-                toggleParticipantsSection();
-            }
+            // Remplacer par la version améliorée
+            window.showRoom = enhanceShowRoom(originalShowRoom);
         }
     });
 });

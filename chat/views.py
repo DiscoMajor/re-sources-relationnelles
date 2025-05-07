@@ -46,9 +46,22 @@ def chat_room(request, room_id):
     unread_messages = room_messages.filter(is_read=False).exclude(user=request.user)
     unread_messages.update(is_read=True)
     
+    # Déterminer le nom à afficher
+    display_name = room.name
+    interlocutor = None
+    
+    # Si c'est une conversation directe, trouver l'interlocuteur
+    if not room.is_group:
+        # Trouver l'autre participant (l'interlocuteur)
+        interlocutor = room.participants.exclude(id=request.user.id).first()
+        if interlocutor:
+            display_name = f"{interlocutor.first_name} {interlocutor.last_name}"
+    
     context = {
         'room': room,
         'room_messages': room_messages,
+        'display_name': display_name,
+        'interlocutor': interlocutor
     }
     
     # Si c'est une requête AJAX, retourner seulement le contenu
@@ -63,7 +76,6 @@ def chat_room(request, room_id):
 def create_room(request):
     if request.method == 'POST':
         room_name = request.POST.get('room_name')
-        is_group = request.POST.get('is_group') == 'on'
         participant_ids = request.POST.getlist('participants')
         
         if not room_name:
@@ -72,7 +84,10 @@ def create_room(request):
             messages.error(request, "Le nom de la conversation est requis.")
             return redirect('chat:rooms_list')
             
-        if is_group and len(participant_ids) < 2:
+        # Toutes les conversations créées manuellement sont désormais des groupes
+        is_group = True
+        
+        if len(participant_ids) < 2:
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return JsonResponse({'error': "Un groupe doit avoir au moins 2 participants."}, status=400)
             messages.error(request, "Un groupe doit avoir au moins 2 participants.")
@@ -92,7 +107,7 @@ def create_room(request):
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return JsonResponse({'success': True, 'room_id': room.id})
                 
-        messages.success(request, f"Conversation '{room_name}' créée avec succès.")
+        messages.success(request, f"Groupe '{room_name}' créé avec succès.")
         return redirect('chat:room', room_id=room.id)
     
     # Récupérer les amis pour le formulaire

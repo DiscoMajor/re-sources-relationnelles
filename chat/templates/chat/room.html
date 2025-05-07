@@ -3,31 +3,15 @@
 {% block title %}{{ display_name }}{% endblock %}
 
 {% block extra_css %}
-<style>
-    .message-container {
-        max-height: 70vh;
-        overflow-y: auto;
-    }
-    
-    .message-bubble {
-        max-width: 70%;
-        word-break: break-word;
-    }
-    
-    .my-message {
-        background-color: #d1fae5;
-        border-radius: 1rem 1rem 0 1rem;
-        margin-left: auto;
-    }
-    
-    .other-message {
-        background-color: #f3f4f6;
-        border-radius: 1rem 1rem 1rem 0;
-    }
-</style>
+<link rel="stylesheet" href="{% static 'css/chat.css' %}">
 {% endblock %}
 
 {% block content %}
+<!-- Métadonnées pour JavaScript -->
+<meta name="user-id" content="{{ request.user.id }}">
+<meta name="user-name" content="{{ request.user.first_name }} {{ request.user.last_name }}">
+<meta name="room-id" content="{{ room.id }}">
+
 <div data-is-group="{{ room.is_group|yesno:'true,false' }}" class="px-4 py-4 sm:px-6 border-b border-gray-200 flex justify-between items-center"></div>
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
     <div class="bg-white shadow-md rounded-lg overflow-hidden">
@@ -47,27 +31,34 @@
                     </svg>
                 </div>
                 {% endif %}
-                <h1 class="text-lg font-medium text-gray-900">{{ display_name }}</h1>
+                <div>
+                    <h1 class="text-lg font-medium text-gray-900">{{ display_name }}</h1>
+                    {% if interlocutor %}
+                        <p class="text-xs text-gray-500">
+                            @{{ interlocutor.username }}
+                        </p>
+                    {% endif %}
+                </div>
             </div>
-            <div class="flex items-center">
+            <div class="flex items-center gap-5">
+                <a href="{% url 'chat:rooms_list' %}" class="text-gray-400 hover:text-gray-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                </a>
                 <a href="#" id="delete-room-btn" data-room-id="{{ room.id }}" class="text-red-400 hover:text-red-500 mr-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                 </a>
-                <a href="{% url 'chat:rooms_list' %}" class="text-gray-400 hover:text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </a>
             </div>
         </div>
 
-        <!-- Messages -->
-        <div id="message-container" class="message-container px-4 py-4 sm:px-6 bg-gray-50">
+        <!-- Messages avec nouvelles classes CSS -->
+        <div id="message-container" class="chat-message-container px-4 py-4 sm:px-6 bg-gray-50">
             {% for message in room_messages %}
                 <div class="mb-4 flex {% if message.user == request.user %}justify-end{% endif %}">
-                    <div class="message-bubble p-3 {% if message.user == request.user %}my-message{% else %}other-message{% endif %}">
+                    <div class="chat-message-bubble p-3 {% if message.user == request.user %}chat-my-message{% else %}chat-other-message{% endif %}">
                         {% if message.user != request.user and room.is_group %}
                             <p class="text-xs text-gray-600 mb-1">{{ message.user.first_name }} {{ message.user.last_name }}</p>
                         {% endif %}
@@ -94,125 +85,20 @@
         </div>
     </div>
 </div>
-
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'js/chat_overlay.js' %}"></script>
 <script>
-    const roomName = {{ room.id }};
-    const userName = "{{ request.user.first_name }} {{ request.user.last_name }}";
-    const userId = {{ request.user.id }};
-    let chatSocket = null;
-    
-    // Scroll to bottom of message container
-    function scrollToBottom() {
-        const messageContainer = document.getElementById('message-container');
-        messageContainer.scrollTop = messageContainer.scrollHeight;
-    }
-    
-    // Add message to chat
-    function addMessage(message, user_id, username, timestamp) {
-        const messageContainer = document.getElementById('message-container');
-        const isMyMessage = user_id === userId;
-        
-        // Format timestamp
-        const date = new Date(timestamp);
-        const hours = date.getHours().toString().padStart(2, '0');
-        const minutes = date.getMinutes().toString().padStart(2, '0');
-        
-        // Create message HTML
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `mb-4 flex ${isMyMessage ? 'justify-end' : ''}`;
-        
-        const messageBubble = document.createElement('div');
-        messageBubble.className = `message-bubble p-3 ${isMyMessage ? 'my-message' : 'other-message'}`;
-        
-        // Add sender name for group chats if not my message
-        if (!isMyMessage && {{ room.is_group|yesno:"true,false" }}) {
-            const nameElement = document.createElement('p');
-            nameElement.className = 'text-xs text-gray-600 mb-1';
-            nameElement.textContent = username;
-            messageBubble.appendChild(nameElement);
-        }
-        
-        // Message content
-        const messageContent = document.createElement('p');
-        messageContent.className = 'text-gray-800';
-        messageContent.textContent = message;
-        messageBubble.appendChild(messageContent);
-        
-        // Timestamp
-        const timeElement = document.createElement('p');
-        timeElement.className = 'text-xs text-gray-500 text-right mt-1';
-        timeElement.textContent = `${hours}:${minutes}`;
-        messageBubble.appendChild(timeElement);
-        
-        messageDiv.appendChild(messageBubble);
-        messageContainer.appendChild(messageDiv);
-        
-        // Scroll to the latest message
-        scrollToBottom();
-    }
-    
-    // Connect to WebSocket
-    function connectWebSocket() {
-        chatSocket = new WebSocket(
-            'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
-        );
-
-        chatSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            addMessage(data.message, data.user_id, data.username, data.timestamp);
-        };
-
-        chatSocket.onclose = function(e) {
-            console.error('Chat socket closed unexpectedly');
-            // Try to reconnect in 5 seconds
-            setTimeout(function() {
-                connectWebSocket();
-            }, 5000);
-        };
-    }
-    
+    // Initialiser les fonctions de la room lors du chargement de la page
     document.addEventListener('DOMContentLoaded', function() {
-        // Connect to WebSocket
-        connectWebSocket();
+        const roomId = {{ room.id }};
+        const userId = {{ request.user.id }};
+        const userName = "{{ request.user.first_name }} {{ request.user.last_name }}";
         
-        // Scroll to bottom when page loads
-        scrollToBottom();
-        
-        // Handle form submission
-        document.getElementById('chat-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const messageInput = document.getElementById('message-input');
-            const message = messageInput.value.trim();
-            
-            if (message) {
-                chatSocket.send(JSON.stringify({
-                    'message': message
-                }));
-                
-                messageInput.value = '';
-            }
-            
-            messageInput.focus();
-        });
-    });
-
-    // Marquer les messages comme lus
-    async function markMessagesAsRead() {
-        try {
-            await fetch(`/chat/mark-read/${roomName}/`);
-        } catch (error) {
-            console.error('Erreur lors du marquage des messages comme lus:', error);
+        if (typeof setupRoomFunctions === 'function') {
+            setupRoomFunctions(roomId, userId, userName);
         }
-    }
-
-    // Exécuter lorsque la page se charge
-    document.addEventListener('DOMContentLoaded', function() {
-        // Marquer les messages comme lus
-        markMessagesAsRead();
     });
 </script>
 {% endblock %}
