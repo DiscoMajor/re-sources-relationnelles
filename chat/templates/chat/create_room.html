@@ -1,0 +1,80 @@
+{% load static %}
+
+{% block title %}Nouvelle Conversation{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="md:grid md:grid-cols-3 md:gap-6">
+        <div class="md:col-span-1">
+            <div class="px-4 sm:px-0">
+                <h3 class="text-lg font-medium leading-6 text-gray-900">Nouvelle Conversation</h3>
+                <p class="mt-1 text-sm text-gray-600">
+                    Créez une nouvelle conversation individuelle ou de groupe avec vos relations.
+                </p>
+            </div>
+        </div>
+        <div class="mt-5 md:mt-0 md:col-span-2">
+            <form action="{% url 'chat:create_room' %}" method="POST">
+                {% csrf_token %}
+                <div class="shadow overflow-hidden sm:rounded-md">
+                    <div class="px-4 py-5 bg-white sm:p-6">
+                        <div class="grid grid-cols-6 gap-6">
+                            <div class="col-span-6">
+                                <label for="room_name" class="block text-sm font-medium text-gray-700">Nom de la conversation</label>
+                                <input type="text" name="room_name" id="room_name" class="mt-1 focus:ring-teal-500 focus:border-teal-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required>
+                            </div>
+                            
+                            <div class="col-span-6">
+                                <div class="flex items-center">
+                                    <input id="is_group" name="is_group" type="checkbox" class="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded" onchange="toggleParticipantsSection()">
+                                    <label for="is_group" class="ml-2 block text-sm text-gray-700">
+                                        Conversation de groupe
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div id="participants-section" class="col-span-6 hidden">
+                                <label class="block text-sm font-medium text-gray-700">Participants</label>
+                                <p class="text-xs text-gray-500 mb-2">Sélectionnez les participants à ajouter à la conversation</p>
+                                
+                                <div class="mt-2 space-y-2 max-h-60 overflow-y-auto">
+                                    {% for friend in friends %}
+                                    <div class="flex items-center">
+                                        <input id="user-{{ friend.id }}" name="participants" type="checkbox" value="{{ friend.id }}" class="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded">
+                                        <label for="user-{{ friend.id }}" class="ml-2 block text-sm text-gray-700">
+                                            {{ friend.first_name }} {{ friend.last_name }}
+                                        </label>
+                                    </div>
+                                    {% empty %}
+                                    <p class="text-sm text-gray-500">Vous n'avez pas encore d'amis. Ajoutez des relations depuis votre profil.</p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <div id="direct-chat-section" class="col-span-6">
+                                <label class="block text-sm font-medium text-gray-700">Participant</label>
+                                <p class="text-xs text-gray-500 mb-2">Sélectionnez une personne pour créer une conversation</p>
+                                
+                                <select name="participants" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 sm:text-sm">
+                                    <option value="">Sélectionnez une personne</option>
+                                    {% for friend in friends %}
+                                    <option value="{{ friend.id }}">{{ friend.first_name }} {{ friend.last_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+                        <a href="{% url 'chat:rooms_list' %}" class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 mr-2">
+                            Annuler
+                        </a>
+                        <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+                            Créer
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

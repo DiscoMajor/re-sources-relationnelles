@@ -1,0 +1,218 @@
+{% load static %}
+
+{% block title %}{{ display_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .message-container {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+    
+    .message-bubble {
+        max-width: 70%;
+        word-break: break-word;
+    }
+    
+    .my-message {
+        background-color: #d1fae5;
+        border-radius: 1rem 1rem 0 1rem;
+        margin-left: auto;
+    }
+    
+    .other-message {
+        background-color: #f3f4f6;
+        border-radius: 1rem 1rem 1rem 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div data-is-group="{{ room.is_group|yesno:'true,false' }}" class="px-4 py-4 sm:px-6 border-b border-gray-200 flex justify-between items-center"></div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <!-- Header -->
+        <div class="px-4 py-4 sm:px-6 border-b border-gray-200 flex justify-between items-center">
+            <div class="flex items-center">
+                {% if room.is_group %}
+                <div class="bg-blue-100 text-blue-800 p-2 rounded-full mr-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                </div>
+                {% else %}
+                <div class="bg-green-100 text-green-800 p-2 rounded-full mr-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                </div>
+                {% endif %}
+                <h1 class="text-lg font-medium text-gray-900">{{ display_name }}</h1>
+            </div>
+            <div class="flex items-center">
+                <a href="#" id="delete-room-btn" data-room-id="{{ room.id }}" class="text-red-400 hover:text-red-500 mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </a>
+                <a href="{% url 'chat:rooms_list' %}" class="text-gray-400 hover:text-gray-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div id="message-container" class="message-container px-4 py-4 sm:px-6 bg-gray-50">
+            {% for message in room_messages %}
+                <div class="mb-4 flex {% if message.user == request.user %}justify-end{% endif %}">
+                    <div class="message-bubble p-3 {% if message.user == request.user %}my-message{% else %}other-message{% endif %}">
+                        {% if message.user != request.user and room.is_group %}
+                            <p class="text-xs text-gray-600 mb-1">{{ message.user.first_name }} {{ message.user.last_name }}</p>
+                        {% endif %}
+                        <p class="text-gray-800">{{ message.value }}</p>
+                        <p class="text-xs text-gray-500 text-right mt-1">{{ message.create_at|date:"H:i" }}</p>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="text-center text-gray-400 py-4">
+                    <p>Aucun message dans cette conversation.</p>
+                    <p>Soyez le premier à envoyer un message!</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Input -->
+        <div class="border-t border-gray-200 px-4 py-3 sm:px-6">
+            <form id="chat-form" class="flex">
+                <input type="text" id="message-input" class="flex-grow focus:outline-none focus:ring-2 focus:ring-teal-500 border-gray-300 rounded-md" placeholder="Écrire un message...">
+                <button type="submit" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500">
+                    Envoyer
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const roomName = {{ room.id }};
+    const userName = "{{ request.user.first_name }} {{ request.user.last_name }}";
+    const userId = {{ request.user.id }};
+    let chatSocket = null;
+    
+    // Scroll to bottom of message container
+    function scrollToBottom() {
+        const messageContainer = document.getElementById('message-container');
+        messageContainer.scrollTop = messageContainer.scrollHeight;
+    }
+    
+    // Add message to chat
+    function addMessage(message, user_id, username, timestamp) {
+        const messageContainer = document.getElementById('message-container');
+        const isMyMessage = user_id === userId;
+        
+        // Format timestamp
+        const date = new Date(timestamp);
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        
+        // Create message HTML
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `mb-4 flex ${isMyMessage ? 'justify-end' : ''}`;
+        
+        const messageBubble = document.createElement('div');
+        messageBubble.className = `message-bubble p-3 ${isMyMessage ? 'my-message' : 'other-message'}`;
+        
+        // Add sender name for group chats if not my message
+        if (!isMyMessage && {{ room.is_group|yesno:"true,false" }}) {
+            const nameElement = document.createElement('p');
+            nameElement.className = 'text-xs text-gray-600 mb-1';
+            nameElement.textContent = username;
+            messageBubble.appendChild(nameElement);
+        }
+        
+        // Message content
+        const messageContent = document.createElement('p');
+        messageContent.className = 'text-gray-800';
+        messageContent.textContent = message;
+        messageBubble.appendChild(messageContent);
+        
+        // Timestamp
+        const timeElement = document.createElement('p');
+        timeElement.className = 'text-xs text-gray-500 text-right mt-1';
+        timeElement.textContent = `${hours}:${minutes}`;
+        messageBubble.appendChild(timeElement);
+        
+        messageDiv.appendChild(messageBubble);
+        messageContainer.appendChild(messageDiv);
+        
+        // Scroll to the latest message
+        scrollToBottom();
+    }
+    
+    // Connect to WebSocket
+    function connectWebSocket() {
+        chatSocket = new WebSocket(
+            'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
+        );
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            addMessage(data.message, data.user_id, data.username, data.timestamp);
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+            // Try to reconnect in 5 seconds
+            setTimeout(function() {
+                connectWebSocket();
+            }, 5000);
+        };
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Connect to WebSocket
+        connectWebSocket();
+        
+        // Scroll to bottom when page loads
+        scrollToBottom();
+        
+        // Handle form submission
+        document.getElementById('chat-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const messageInput = document.getElementById('message-input');
+            const message = messageInput.value.trim();
+            
+            if (message) {
+                chatSocket.send(JSON.stringify({
+                    'message': message
+                }));
+                
+                messageInput.value = '';
+            }
+            
+            messageInput.focus();
+        });
+    });
+
+    // Marquer les messages comme lus
+    async function markMessagesAsRead() {
+        try {
+            await fetch(`/chat/mark-read/${roomName}/`);
+        } catch (error) {
+            console.error('Erreur lors du marquage des messages comme lus:', error);
+        }
+    }
+
+    // Exécuter lorsque la page se charge
+    document.addEventListener('DOMContentLoaded', function() {
+        // Marquer les messages comme lus
+        markMessagesAsRead();
+    });
+</script>
+{% endblock %}

@@ -6,6 +6,7 @@
     {% progressive_web_app_meta %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="user-id" content="{{ request.user.id }}">
     <title>{% block title %}Ressources Relationnelles{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     {% block extra_css %}
@@ -31,6 +32,10 @@
                         </a>
                         <a href="{% url 'cartography:map' %}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300">
                             Cartographie
+                        </a>
+                        <a href="{% url 'chat:rooms_list' %}" class="inline-flex items-center px-1 pt-1 border-b-2 {% if 'chat' in request.path %}border-teal-700 text-gray-900{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} text-sm font-medium leading-5">
+                            <span>Messages</span>
+                            <span id="unread-count" class="ml-1 px-2 py-0.5 text-xs rounded-full bg-teal-100 text-teal-800 hidden">0</span>
                         </a>
                     </nav>
                 </div>
@@ -74,6 +79,10 @@
                     </a>
                     <a href="#" class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                         Cartographie
+                    </a>
+                    <a href="{% url 'chat:rooms_list' %}" class="{% if 'chat' in request.path %}bg-teal-50 border-teal-500 text-teal-700{% else %}border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Messages
+                        <span id="mobile-unread-count" class="ml-1 px-2 py-0.5 text-xs rounded-full bg-teal-100 text-teal-800 hidden">0</span>
                     </a>
                 </div>
                 <div class="pt-4 pb-3 border-t border-gray-200">
@@ -150,6 +159,8 @@
         </div>
     </footer>
 
+    {% include "chat/chat_overlay.html" %}
+
     <script>
         function toggleMobileMenu() {
             const mobileMenu = document.getElementById('mobile-menu');
@@ -169,5 +180,6 @@
     </script>
     
     {% block extra_js %}{% endblock %}
+    <script src="{% static 'js/chat_overlay.js' %}"></script>
 </body>
 </html>
