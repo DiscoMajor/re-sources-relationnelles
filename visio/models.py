@@ -1,8 +1,9 @@
 from django.db import models
+from django.utils import timezone
 import uuid
 from django.utils.text import slugify
 from datetime import timedelta
-from django.utils import timezone
+
 
 class Meeting(models.Model):
     creator = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='created_meeting')  # creator of the meeting
@@ -14,8 +15,18 @@ class Meeting(models.Model):
     ending_date_time = models.DateTimeField()
     unique_meeting_name = models.TextField(blank=True, null=True)
 
+    @property
+    def meeting_status(self):
+        now = timezone.now()
+        if now < self.starting_date_time:
+            return "not_started"
+        elif now > self.ending_date_time:
+            return "ended"
+        else:
+            return "ongoing"
+
     def __str__(self):
-        return '%s: %s' % (self.creator, self.title_of_meeting)
+        return f"{self.creator}: {self.title_of_meeting}"
 
     def save(self, *args, **kwargs):
         if self.duration:
@@ -23,22 +34,7 @@ class Meeting(models.Model):
 
         if not self.unique_meeting_name:
             self.unique_meeting_name = slugify(
-                str(self.title_of_meeting) + '-' + str(uuid.uuid4())
+                f"{self.title_of_meeting}-{uuid.uuid4()}"
             )
-        return super(Meeting, self).save()
-
-    @property
-    def meeting_time(self):
-        """
-        this is a model property for checking if it is meeting time. we shall be using
-        this in the views
-        """
-        return (timezone.now() >= self.starting_date_time)
-
-
-    @property
-    def after_meeting(self):
-        """
-        will check if the time for the meeting has passed, i.e. meeting has ended"""
-
-        return (timezone.now() >= self.ending_date_time)
+        
+        super().save(*args, **kwargs)

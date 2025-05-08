@@ -1,4 +1,4 @@
-from datetime import timezone
+from django.utils import timezone
 from django.shortcuts import render, HttpResponseRedirect
 from visio.models import Meeting
 from .forms import MeetingCreateForm
@@ -31,39 +31,13 @@ def meeting_list(request):
 def meeting(request, unique_meeting_name):
     message = None
     meeting = Meeting.objects.filter(unique_meeting_name=unique_meeting_name).first()
-    if not meeting.meeting_time:
-        """
-        will check if it is not time for the meeting using the property we declared in the model.
-        """
-        now = timezone.localtime()
-        t = abs(now - meeting.starting_date_time).total_seconds()
-        MinutesGet, SecondsGet = divmod(t, 60)
-        HoursGet, MinutesGet = divmod(MinutesGet, 60)
-
-        message = f"it is not the time for meeting {meeting.title_of_meeting}, Meeting starts in {HoursGet} Hours : {MinutesGet} Minutes : {'{:.2f}'.format(SecondsGet)} Seconds."
-        # return render(request, 'onlinemeet/meeting_list.html', {'meetings': meetings})
-        print(now, message)
-
-        messages.warning(request, message)
-        # return render(request, 'onlinemeet/meeting_list.html', {'meetings': meetings})
-        return HttpResponseRedirect(reverse('home'))
-
-    elif meeting.after_meeting:
-        """ will check if the meeting time has passed"""
-        now = timezone.localtime()
-        t = abs(meeting.ending_date_time - now).total_seconds()
-        MinutesGet, SecondsGet = divmod(t, 60)
-        HoursGet, MinutesGet = divmod(MinutesGet, 60)
-
-        message = f"The meeting {meeting.title_of_meeting}, ended {HoursGet} Hours : {MinutesGet} Minutes : {'{:.2f}'.format(SecondsGet)} Seconds."
-        print(now, message)
-        messages.warning(request, message)
-        return HttpResponseRedirect(reverse('home'))
-
-
+    context = {
+        'meeting': meeting,
+        'current_time': timezone.now()
+    }
     if not request.user == meeting.creator:
         """check to know if the current user is not the creator of the meeting
         if True, then the guest page template will be rendered."""
-        return render(request, 'visio/guest.html', {'meeting': meeting})
+        return render(request, 'visio/guest.html', context)
 
-    return render(request, 'visio/video_call.html', {'meeting': meeting})
+    return render(request, 'visio/video_call.html', context)

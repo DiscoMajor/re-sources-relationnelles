@@ -1,43 +1,46 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}LIVE MEETING PAGE{% endblock %}
-{% block content %}
-<h2>Title: {{meeting.title_of_meeting}}</h2>
-    <div id="meet">
 
-    </div>
-    {% block script %}
-    <script src='https://meet.jit.si/external_api.js'></script>
-    <script>
-        const domain = 'meet.jit.si';
-        const options = {
-            roomName: 'JitsiMeetAPIExample',
-            width: 1000,
-            height: 600,
-            parentNode: document.querySelector('#meet'),
-            lang: 'en',  // default language, change the language to english
-            configOverwrite: {
-                startWithAudioMuted: true, // mute device audio by default
-                startWithVideoMuted: true, // mute video by default
-                prejoinPageEnabled: true, // enable prejoin page to set name
-                enableLobbyChat: true,  // enable lobby chat
-                localRecording: true,
-                startWithAudioMuted: true,
-                disableInitialGUM: true,
+{% block title %}{{ meeting.title_of_meeting }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h2 class="text-2xl font-bold mb-4">{{ meeting.title_of_meeting }}</h2>
     
-            },
-            interfaceConfigOverwrite: {
-                SHOW_CHROME_EXTENSION_BANNER: false, //ok
-                TOOLBAR_ALWAYS_VISIBLE: true, // ok
-                SETTINGS_SECTIONS: ['devices', 'language'],
-                SHOW_POWERED_BY: false,
-                TOOLBAR_ALWAYS_VISIBLE: true,
-            },
-            /* The toolbars that will be available for only the creator of the meeting */
-            TOOLBAR_BUTTONS: ["microphone","camera","desktop","hangup","chat","raisehand","participants-pane","tileview","toggle-camera","invite","videoquality","livestreaming","mute-everyone","mute-video-everyone","sharedvideo","shareaudio","select-background","stats","settings","filmstrip"],
-        };
+    {% if meeting.meeting_status == "not_started" %}
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4">
+            <p>La réunion commencera le {{ meeting.starting_date_time|date:"d/m/Y" }} à {{ meeting.starting_date_time|time:"H:i" }}</p>
+        </div>
+    {% elif meeting.meeting_status == "ended" %}
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4">
+            <p>Cette réunion est terminée</p>
+        </div>
+    {% else %}
+        <div id="meet"></div>
+    {% endif %}
+</div>
+
+{% block script %}
+<script src='https://meet.jit.si/external_api.js'></script>
+<script>
+    const domain = 'meet.jit.si';
+    const options = {
+        roomName: '{{ meeting.unique_meeting_name }}',
+        width: '100%',
+        height: 600,
+        parentNode: document.querySelector('#meet'),
+        lang: 'fr',
+        configOverwrite: {
+            startWithAudioMuted: true,
+            startWithVideoMuted: true,
+            prejoinPageEnabled: true,
+            enableLobbyChat: true,
+        },
+    };
+
+    {% if meeting.meeting_status == "ongoing" %}
     const api = new JitsiMeetExternalAPI(domain, options);
-    </script>
-    
-    {% endblock %}
+    {% endif %}
+</script>
+{% endblock %}
 {% endblock %}
