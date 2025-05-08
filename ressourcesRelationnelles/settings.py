@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-=!=r$vw0wg*5)o9z@x32p57j^949cm$@0u^b-z#2-lb%k%sw-z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.1.16', '*']
 
 
 # Application definition
@@ -40,12 +40,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'channels'
+    'channels',
     'users',
     'ressources',
     'comments',
     'pwa',
     'cartography',
+    'chat',
     'videoconference',
     'livekit',
 ]

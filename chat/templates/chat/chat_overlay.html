@@ -1,0 +1,25 @@
+<div id="chat-overlay" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-5 mx-auto p-5 border shadow-lg rounded-md bg-white w-full max-w-lg h-5/6 flex flex-col">
+        <!-- En-tête de l'overlay -->
+        <div class="flex justify-between items-center border-b pb-3">
+            <h3 id="overlay-title" class="text-lg font-medium text-gray-900">Messages</h3>
+            <button id="close-chat-overlay" class="text-gray-400 hover:text-gray-500">
+                <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        
+        <!-- Conteneur dynamique pour charger les différentes vues -->
+        <div id="chat-content-container" class="overflow-y-auto flex-grow py-2">
+            <!-- Par défaut, on affiche la liste des conversations -->
+            <div id="rooms-list-view">
+                <!-- Le contenu sera chargé dynamiquement via AJAX -->
+            </div>
+            
+            <!-- Les autres vues seront chargées dynamiquement -->
+            <div id="create-room-view" class="hidden"></div>
+            <div id="room-view" class="hidden"></div>
+        </div>
+    </div>
+</div>

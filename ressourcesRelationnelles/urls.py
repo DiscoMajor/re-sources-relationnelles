@@ -30,4 +30,5 @@ urlpatterns = [
     path('', include('pwa.urls')),
     path('cartography/', include('cartography.urls', namespace='cartography')),
     path('videoconference/', include('videoconference.urls', namespace='videoconference')),
+    path('chat/', include('chat.urls')),
 ]

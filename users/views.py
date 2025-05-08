@@ -44,40 +44,61 @@ class CustomLogoutView(LogoutView):
 @login_required
 def profile_view(request):
     """Vue pour afficher et gérer le profil utilisateur"""
-    
+   
     utilisateurs_non_amis = User.objects.exclude(
         id__in=request.user.amis.all().values_list('id', flat=True)
     ).exclude(id=request.user.id)
-
+    
     if request.method == 'POST':
         action = request.POST.get('action')
         ami_id = request.POST.get('ami_id')
-        
+       
         # Vérifier si l'ami_id est vide
         if not ami_id and action == 'ajouter':
             messages.error(request, "Veuillez sélectionner un utilisateur.")
             return redirect('users:profile')
-        
+       
         try:
             ami = User.objects.get(id=ami_id)
-            
+           
             if action == 'ajouter':
                 request.user.amis.add(ami)
                 messages.success(request, f"{ami.first_name} {ami.last_name} a été ajouté à vos relations.")
-            
+                
+                # Créer automatiquement une conversation directe
+                from chat.models import Room
+                
+                # Vérifier si une conversation existe déjà
+                existing_chat = Room.objects.filter(
+                    is_group=False,
+                    participants=request.user
+                ).filter(
+                    participants=ami
+                ).first()
+                
+                # Si aucune conversation n'existe, en créer une nouvelle
+                if not existing_chat:
+                    room_name = f"{request.user.first_name} et {ami.first_name}"
+                    room = Room.objects.create(name=room_name, is_group=False)
+                    room.participants.add(request.user, ami)
+           
             elif action == 'supprimer':
                 request.user.amis.remove(ami)
                 messages.success(request, f"{ami.first_name} {ami.last_name} a été retiré de vos relations.")
                 
+                # Optionnel: Supprimer la conversation directe si elle existe
+                # from chat.models import Room
+                # Room.objects.filter(is_group=False, participants=request.user).filter(participants=ami).delete()
+                
             return redirect('users:profile')
-            
+           
         except User.DoesNotExist:
             messages.error(request, "L'utilisateur sélectionné n'existe pas.")
-    
+   
     context = {
         'utilisateurs_non_amis': utilisateurs_non_amis
     }
-    
+   
     return render(request, 'users/profile.html', context)
 
 def index_view(request):
