@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Visioconférence{% endblock %}
+{% block content %}
+<form method="post">
+  {%csrf_token%}
+  <h2>Formulaire de création de salle de conférence</h2>
+  {{form.as_p}}
+  <input type="submit" value="Démarrer la visioconférence">
+</form>
+{% endblock %}
