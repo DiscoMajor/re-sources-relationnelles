@@ -9,6 +9,7 @@
     <meta name="user-id" content="{{ request.user.id }}">
     <title>{% block title %}Ressources Relationnelles{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src='https://meet.jit.si/external_api.js'></script>
     {% block extra_css %}
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
     {% endblock %}
@@ -27,7 +28,7 @@
                         <a href="{% url 'index' %}" class="inline-flex items-center px-1 pt-1 border-b-2 {% if request.path == '/' %}border-teal-700 text-gray-900{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} text-sm font-medium leading-5">
                             Accueil
                         </a>
-                        <a href="#" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        <a href="{% url 'visio:video_call' %}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300">
                             Visioconférence
                         </a>
                         <a href="{% url 'cartography:map' %}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300">

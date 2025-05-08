@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'pwa',
     'cartography',
     'chat',
+    'visio',
 ]
 
 MIDDLEWARE = [
