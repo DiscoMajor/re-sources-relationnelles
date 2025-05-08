@@ -31,4 +31,5 @@ urlpatterns = [
     path('cartography/', include('cartography.urls', namespace='cartography')),
     path('videoconference/', include('videoconference.urls', namespace='videoconference')),
     path('chat/', include('chat.urls')),
+    path('visio/', include('visio.urls', namespace='visio')),
 ]
