@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
     start_button.addEventListener('click', start_session);
 });
 
+const livekit_url = 'ws://localhost:7880';
+
 async function start_session() {
     const username = document.getElementById('username').value.trim();
     if (!username) {
@@ -17,9 +19,8 @@ async function start_session() {
     
     const { connect, Room, LocalParticipant } = window.livekit;
     const room = new Room();
+    await room.connect(livekit_url, token);
 }
-
-// const livekit_url = 'ws://localhost:7880';
 // const token_url = '/videoconference/get-livekit-token/?identity=${encodeURIComponent(username)}$room=ma_salle';
 
 // try {

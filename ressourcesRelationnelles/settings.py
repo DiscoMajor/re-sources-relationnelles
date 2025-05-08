@@ -27,24 +27,27 @@ SECRET_KEY = 'django-insecure-=!=r$vw0wg*5)o9z@x32p57j^949cm$@0u^b-z#2-lb%k%sw-z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels'
     'users',
     'ressources',
     'comments',
     'pwa',
     'cartography',
     'videoconference',
+    'livekit',
 ]
 
 MIDDLEWARE = [
@@ -77,6 +80,7 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = 'ressourcesRelationnelles.asgi.application'
 WSGI_APPLICATION = 'ressourcesRelationnelles.wsgi.application'
 
 
@@ -198,3 +202,13 @@ PWA_APP_SCREENSHOTS = [
     "type": "image/png"
     }
 ]
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+        # "BACKEND": "channels_redis.core.RedisChannelLayer",
+        # "CONFIG": {
+        #     "hosts": [("redis", 6379)],
+        # },
+    }
+}
