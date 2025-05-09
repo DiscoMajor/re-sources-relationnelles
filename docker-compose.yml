@@ -20,13 +20,6 @@ services:
       - "8000:8000"
     depends_on:
       - db
-      - redis
-    environment:
-      - LIVEKIT_API_KEY=${LIVEKIT_API_KEY}
-      - LIVEKIT_API_SECRET=${LIVEKIT_API_SECRET}
-
-  redis:
-    image: redis:alpine
 
 volumes:
   postgres_data:

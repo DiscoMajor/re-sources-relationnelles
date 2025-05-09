@@ -27,9 +27,6 @@ RUN npm install -D tailwindcss@latest postcss autoprefixer leaflet @hotwired/sti
 # Installer Tom Select
 RUN npm install tom-select
 
-# Installer le SDK Livekit
-RUN npm install livekit-client @livekit/components-react @livekit/components-styles --save
-
 # Copie le reste des fichiers de l'application
 COPY . .
 

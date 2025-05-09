@@ -31,9 +31,29 @@
                         <a href="{% url 'index' %}" class="inline-flex items-center px-1 pt-1 border-b-2 {% if request.path == '/' %}border-teal-700 text-gray-900{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} text-sm font-medium leading-5">
                             Accueil
                         </a>
-                        <a href="{% url 'visio:video_call' %}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300">
-                            Visioconférence
-                        </a>
+                        <div class="relative group inline-flex items-center">
+                            <span class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 cursor-pointer">
+                                Visioconférence
+                                <svg class="ml-2 h-5 w-5 text-gray-400 group-hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
+                            
+                            <!-- Menu déroulant -->
+                            <div class="absolute left-0 top-full w-48 bg-white rounded-md shadow-lg z-50 hidden group-hover:block">
+                                <div class="py-1">
+                                    <a href="{% url 'visio:video_call' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        Créer une réunion
+                                    </a>
+                                    <a href="{% url 'visio:video_call' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        Démarrer une réunion
+                                    </a>
+                                    <a href="{% url 'visio:meeting_list' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        Mes réunions
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                         <a href="{% url 'cartography:map' %}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300">
                             Cartographie
                         </a>
@@ -87,10 +107,18 @@
                     <a href="{% url 'index' %}" class="{% if request.path == '/' %}bg-teal-50 border-teal-500 text-teal-700{% else %}border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700{% endif %} block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                         Accueil
                     </a>
-                    <a href="#" class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
-                        Visioconférence
-                    </a>
-                    <a href="#" class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    <div class="space-y-1">
+                        <a href="{% url 'visio:video_call' %}" class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                            Créer une réunion
+                        </a>
+                        <a href="{% url 'visio:video_call' %}" class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                            Démarrer une réunion
+                        </a>
+                        <a href="{% url 'visio:meeting_list' %}" class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                            Mes réunions
+                        </a>
+                    </div>
+                    <a href="{% url 'cartography:map' %}" class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                         Cartographie
                     </a>
                     <a href="{% url 'chat:rooms_list' %}" class="{% if 'chat' in request.path %}bg-teal-50 border-teal-500 text-teal-700{% else %}border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700{% endif %} flex items-center pl-3 pr-4 py-2 border-l-4 text-base font-medium">
