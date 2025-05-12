@@ -2,6 +2,9 @@
 {% load static %}
 {% block title %}Visioconférence{% endblock %}
 {% block content %}
+{% if not user.is_authenticated %}
+  {% include 'not-logged.html' %}
+{% else %}
 <div class="max-w-4xl mx-auto px-4 py-8">
   <h2 class="text-2xl font-bold mb-6">Nouvelle conférence</h2>
   <div class="bg-white p-6 rounded-lg shadow-md">
@@ -17,6 +20,7 @@
     </form>
   </div>
 </div>
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}

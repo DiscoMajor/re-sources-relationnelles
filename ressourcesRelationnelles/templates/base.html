@@ -31,6 +31,8 @@
                         <a href="{% url 'index' %}" class="inline-flex items-center px-1 pt-1 border-b-2 {% if request.path == '/' %}border-teal-700 text-gray-900{% else %}border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300{% endif %} text-sm font-medium leading-5">
                             Accueil
                         </a>
+                        {% if user.is_authenticated %}
+                        <!-- Lien vers la visioconférence -->
                         <div class="relative group inline-flex items-center">
                             <span class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300 cursor-pointer">
                                 Visioconférence
@@ -54,6 +56,7 @@
                                 </div>
                             </div>
                         </div>
+                        {% endif %}
                         <a href="{% url 'cartography:map' %}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-gray-500 hover:text-gray-700 hover:border-gray-300">
                             Cartographie
                         </a>
