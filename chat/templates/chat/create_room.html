@@ -1,7 +1,6 @@
 {% load static %}
-
 {% block title %}Nouvelle Conversation de Groupe{% endblock %}
-
+<!-- La vue pour créer les groupes de conversation manuellement (réservé pour les conversations multiples) -->
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="md:grid md:grid-cols-3 md:gap-6">
@@ -23,14 +22,12 @@
                                 <label for="room_name" class="block text-sm font-medium text-gray-700">Nom de la conversation</label>
                                 <input type="text" name="room_name" id="room_name" class="mt-1 focus:ring-teal-500 focus:border-teal-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" required>
                             </div>
-                            
-                            <!-- Toujours créer un groupe, donc caché et toujours coché -->
+                            <!-- Toujours créer un groupe, donc caché et toujours coché, 
+                            la création de salon à 2 participants est géré automatiquement lors de l'ajout d'ami -->
                             <input id="is_group" name="is_group" type="checkbox" class="hidden" checked>
-                            
                             <div id="participants-section" class="col-span-6">
                                 <label class="block text-sm font-medium text-gray-700">Participants</label>
                                 <p class="text-xs text-gray-500 mb-2">Sélectionnez les participants à ajouter à la conversation</p>
-                                
                                 <div class="mt-2 space-y-2 max-h-60 overflow-y-auto">
                                     {% for friend in friends %}
                                     <div class="flex items-center">

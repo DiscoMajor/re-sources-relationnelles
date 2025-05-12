@@ -1,4 +1,6 @@
 {% load static %}
+<!-- Vue par défaut lors de l'ouverture de l'overlay de messagerie,
+affiche la liste des conversations disponibles -->
 {% block title %}Mes Conversations{% endblock %}
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -8,7 +10,7 @@
             Nouveau groupe
         </a>
     </div>
-   
+
     {% if rooms %}
         <div class="bg-white shadow overflow-hidden sm:rounded-md">
             <ul class="divide-y divide-gray-200">
