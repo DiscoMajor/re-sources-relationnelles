@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
 from .models import Room, Message
 from users.models import User
 from django.http import JsonResponse, HttpResponse
@@ -13,7 +12,7 @@ def index(request):
 
 @login_required
 def rooms_list(request):
-    # Obtenir toutes les rooms auxquelles l'utilisateur participe
+    # Récupère tous les salons de conversations auxquels l'utilisateur participe
     rooms = Room.objects.filter(participants=request.user).order_by('-created_at')
     
     context = {
@@ -32,14 +31,14 @@ def rooms_list(request):
 def chat_room(request, room_id):
     room = get_object_or_404(Room, id=room_id)
     
-    # Vérifier si l'utilisateur est un participant de cette room
-    if request.user not in room.participants.all():
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return JsonResponse({'error': "Vous n'avez pas accès à cette conversation."}, status=403)
-        messages.error(request, "Vous n'avez pas accès à cette conversation.")
-        return redirect('chat:rooms_list')
+    # # Vérifier si l'utilisateur est un participant de cette room
+    # if request.user not in room.participants.all():
+    #     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+    #         return JsonResponse({'error': "Vous n'avez pas accès à cette conversation."}, status=403)
+    #     messages.error(request, "Vous n'avez pas accès à cette conversation.")
+    #     return redirect('chat:rooms_list')
     
-    # Récupérer les messages de la room
+    # Récupérer les messages du salon de discussion
     room_messages = Message.objects.filter(room=room).order_by('create_at')
     
     # Marquer tous les messages non lus comme lus
@@ -50,7 +49,7 @@ def chat_room(request, room_id):
     display_name = room.name
     interlocutor = None
     
-    # Si c'est une conversation directe, trouver l'interlocuteur
+    # Si c'est une conversation entre deux utilisateurs (salon par défaut), trouver l'interlocuteur
     if not room.is_group:
         # Trouver l'autre participant (l'interlocuteur)
         interlocutor = room.participants.exclude(id=request.user.id).first()
@@ -84,9 +83,10 @@ def create_room(request):
             messages.error(request, "Le nom de la conversation est requis.")
             return redirect('chat:rooms_list')
             
-        # Toutes les conversations créées manuellement sont désormais des groupes
+        # Une conversation crée manuellement est considérée comme un groupe (de 2 à X participants)
         is_group = True
         
+        # Contrôle de la cohérence lors de la création du groupe (au moins 2 participants)
         if len(participant_ids) < 2:
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return JsonResponse({'error': "Un groupe doit avoir au moins 2 participants."}, status=400)
@@ -94,7 +94,8 @@ def create_room(request):
             return redirect('chat:rooms_list')
             
         room = Room.objects.create(name=room_name, is_group=is_group)
-        room.participants.add(request.user)  # Ajout du créateur
+        # Ajout du créateur
+        room.participants.add(request.user)
         
         # Ajouter les participants sélectionnés
         for user_id in participant_ids:
@@ -125,40 +126,40 @@ def create_room(request):
     # Sinon, retourner la page complète
     return render(request, 'chat/create_room.html', context)
 
-@login_required
-def create_direct_chat(request, user_id):
-    # Vérifier si l'utilisateur existe et est un ami
-    other_user = get_object_or_404(User, id=user_id)
+# @login_required
+# def create_direct_chat(request, user_id):
+#     # Vérifier si l'utilisateur existe et est un ami
+#     other_user = get_object_or_404(User, id=user_id)
     
-    if other_user not in request.user.amis.all():
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return JsonResponse({'error': "Vous ne pouvez chatter qu'avec vos relations."}, status=403)
-        messages.error(request, "Vous ne pouvez chatter qu'avec vos relations.")
-        return redirect('chat:rooms_list')
+#     if other_user not in request.user.amis.all():
+#         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+#             return JsonResponse({'error': "Vous ne pouvez chatter qu'avec vos relations."}, status=403)
+#         messages.error(request, "Vous ne pouvez chatter qu'avec vos relations.")
+#         return redirect('chat:rooms_list')
     
-    # Vérifier si un chat direct existe déjà
-    existing_chat = Room.objects.filter(
-        is_group=False,
-        participants=request.user
-    ).filter(
-        participants=other_user
-    ).first()
+#     # Vérifier si un chat direct existe déjà
+#     existing_chat = Room.objects.filter(
+#         is_group=False,
+#         participants=request.user
+#     ).filter(
+#         participants=other_user
+#     ).first()
     
-    if existing_chat:
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return JsonResponse({'success': True, 'room_id': existing_chat.id})
-        return redirect('chat:room', room_id=existing_chat.id)
+#     if existing_chat:
+#         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+#             return JsonResponse({'success': True, 'room_id': existing_chat.id})
+#         return redirect('chat:room', room_id=existing_chat.id)
     
-    # Créer un nouveau chat direct
-    room_name = f"{request.user.first_name} et {other_user.first_name}"
-    room = Room.objects.create(name=room_name, is_group=False)
-    room.participants.add(request.user, other_user)
+#     # Créer un nouveau chat direct
+#     room_name = f"{request.user.first_name} et {other_user.first_name}"
+#     room = Room.objects.create(name=room_name, is_group=False)
+#     room.participants.add(request.user, other_user)
     
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return JsonResponse({'success': True, 'room_id': room.id})
+#     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+#         return JsonResponse({'success': True, 'room_id': room.id})
     
-    messages.success(request, f"Conversation avec {other_user.first_name} créée.")
-    return redirect('chat:room', room_id=room.id)
+#     messages.success(request, f"Conversation avec {other_user.first_name} créée.")
+#     return redirect('chat:room', room_id=room.id)
 
 @login_required
 def get_unread_count(request):
@@ -190,12 +191,12 @@ def mark_messages_read(request, room_id):
 def delete_room(request, room_id):
     room = get_object_or_404(Room, id=room_id)
     
-    # Vérifier si l'utilisateur est un participant de cette room
-    if request.user not in room.participants.all():
-        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return JsonResponse({'error': "Vous n'avez pas accès à cette conversation."}, status=403)
-        messages.error(request, "Vous n'avez pas accès à cette conversation.")
-        return redirect('chat:rooms_list')
+    # # Vérifier si l'utilisateur est un participant de cette room
+    # if request.user not in room.participants.all():
+    #     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+    #         return JsonResponse({'error': "Vous n'avez pas accès à cette conversation."}, status=403)
+    #     messages.error(request, "Vous n'avez pas accès à cette conversation.")
+    #     return redirect('chat:rooms_list')
     
     # Supprimer la room
     room_name = room.name

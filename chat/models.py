@@ -1,6 +1,7 @@
 from django.db import models
-from django.utils import timezone
 
+
+# Classe de création de la table des salons de conversation
 class Room(models.Model):
     name = models.CharField(max_length=500)
     is_group = models.BooleanField(default=False)
@@ -10,6 +11,8 @@ class Room(models.Model):
     def __str__(self):
         return self.name
 
+
+# Calsse de création de la table qui va contenir les messages des conversations
 class Message(models.Model):
     value = models.TextField()
     create_at = models.DateTimeField(auto_now_add=True)
