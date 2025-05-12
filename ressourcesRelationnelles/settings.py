@@ -15,7 +15,8 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+LIVEKIT_API_KEY = os.environ.get("LIVEKIT_API_KEY")
+LIVEKIT_API_SECRET = os.environ.get("LIVEKIT_API_SECRET")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -26,7 +27,8 @@ SECRET_KEY = 'django-insecure-=!=r$vw0wg*5)o9z@x32p57j^949cm$@0u^b-z#2-lb%k%sw-z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.1.16', '*']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.1.16', 'https://4f8a-2a01-e0a-df4-6350-1549-fd3-b98f-7746.ngrok-free.app', '*']
+CSRF_TRUSTED_ORIGINS = ['https://4f8a-2a01-e0a-df4-6350-1549-fd3-b98f-7746.ngrok-free.app','https://*.127.0.0.1']
 
 
 # Application definition
@@ -46,6 +48,7 @@ INSTALLED_APPS = [
     'pwa',
     'cartography',
     'chat',
+    'visio',
 ]
 
 MIDDLEWARE = [
@@ -121,7 +124,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Paris'
 
 USE_I18N = True
 
@@ -195,9 +198,9 @@ PWA_APP_SHORTCUTS = [
 ]
 PWA_APP_SCREENSHOTS = [
     {
-      'src': '/static/images/ressource-logo.png',
-      'sizes': '750x1334',
-      "type": "image/png"
+    'src': '/static/images/ressource-logo.png',
+    'sizes': '750x1334',
+    "type": "image/png"
     }
 ]
 

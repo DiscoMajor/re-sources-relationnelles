@@ -30,4 +30,5 @@ urlpatterns = [
     path('', include('pwa.urls')),
     path('cartography/', include('cartography.urls', namespace='cartography')),
     path('chat/', include('chat.urls')),
+    path('visio/', include('visio.urls', namespace='visio')),
 ]
