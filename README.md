@@ -46,16 +46,7 @@ Nous nous baserons sur le PEP 8 de python (https://peps.python.org/pep-0008/) qu
 
 - Annotation dans des chaines de caractères
 
-  Les doubles quotes seront d'usages.
-    Exemple : (
-            "Couldn't import Django. Are you sure it's installed and "
-            "available on your PYTHONPATH environment variable? Did you "
-            "forget to activate a virtual environment?"
-        )
-  Dans le cas ou des annotations devrait se trouver dans la chaine nous utiliserons les annotations simples dans celle-ci pour plus de lisibilité.
-    Exemple : (
-            "This a string with 'single quote' on it"
-          )
+  Les single quotes seront d'usages.
 
   - Espaces dans les expressions
 
