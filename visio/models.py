@@ -6,10 +6,10 @@ from datetime import timedelta
 
 
 class Meeting(models.Model):
-    creator = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='created_meeting')  # creator of the meeting
+    creator = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='created_meeting')
     title_of_meeting = models.CharField(max_length=150)
-    created_at = models.DateTimeField(auto_now_add=True)  # the time meeting was created
-    updated_at = models.DateTimeField(auto_now=True)  # time meeting was updated
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     duration = models.PositiveIntegerField(default=60)
     starting_date_time = models.DateTimeField()
     ending_date_time = models.DateTimeField()

@@ -13,23 +13,20 @@ def home(request):
         form = MeetingCreateForm(request.POST)
         if form.is_valid():
             meeting = form.save(commit=False)
-            meeting.creator = request.user  # Set the creator to the logged-in user
+            meeting.creator = request.user
             meeting.save()
             messages.success(request, "Réunion créée avec succès !")
-            return HttpResponseRedirect(reverse('visio:meeting_list'))  # Redirect to the meeting list page
+            return HttpResponseRedirect(reverse('visio:meeting_list'))
     return render(request, 'visio/home.html', {'form': form})
 
-@login_required()  # to ensure only logged in user can view this page.
+@login_required()
 def meeting_list(request):
-    """We are going to filter the meeting, so only the registered user can view
-    the page, and then all meeting created by such individual will be displayed"""
     user = request.user
     meetings = Meeting.objects.filter(creator=user) 
 
     return render(request, 'visio/meeting_list.html', {'meetings': meetings})
 
 def meeting(request, unique_meeting_name):
-    message = None
     meeting = Meeting.objects.filter(unique_meeting_name=unique_meeting_name).first()
     context = {
         'meeting': meeting,

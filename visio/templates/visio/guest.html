@@ -1,41 +1,33 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}LIVE MEETING PAGE{% endblock %}
-{% block content %}
-{% if not user.is_authenticated %}
-  {% include 'not-logged.html' %}
-{% else %}
-<h2>Title: {{meeting.title_of_meeting}}</h2>
-    <div id="meet">
 
-    </div>
+{% block title %}LIVE MEETING PAGE{% endblock %}
+
+{% block content %}
+    {% include './meeting_status.html' %}
     {% block script %}
     <script src='https://meet.jit.si/external_api.js'></script>
     <script>
         const domain = 'meet.jit.si'
         const options = {
-            roomName: 'JitsiMeetAPIExample',
-            width: 1000,
-            height: 800,
+            roomName: '{{ meeting.title_of_meeting }}',
+            width: '100%',
+            height: '100%',
             parentNode: document.querySelector('#meet'),
-            lang: 'en',  // default language, change the language to english
+            lang: 'fr',
             configOverwrite: {
-                disableRemoteMute: true,  //DISABLE MUTE ALL FEATURE IN JITSI
+                disableRemoteMute: true,
                 remoteVideoMenu: {
-                    // If set to true the 'Kick out' button will be disabled for the guest.
                     disableKick: true
                 },
             },
             interfaceConfigOverwrite: {
                 filmStripOnly: true,
-                /* the toolbars that will be visible for the guest of the meeting.*/
                 TOOLBAR_BUTTONS: ['microphone', 'camera', 'closedcaptions', 'desktop', 
                 'fullscreen', 'fodeviceselection', 'chat', 'etherpad', 'raisehand', 'filmstrip', 'shortcuts', 'tileview','download', 'help','hangup'], 
             }
         };
     const api = new JitsiMeetExternalAPI(domain, options);
     </script>
-    
     {% endblock %}
-    {% endif %}
 {% endblock %}
