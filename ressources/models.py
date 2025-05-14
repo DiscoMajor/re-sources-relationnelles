@@ -1,4 +1,5 @@
 from django.db import models
+from users.models import User
 
 class Type(models.Model):
     label = models.CharField(max_length=100)
@@ -27,4 +28,17 @@ class Ressource(models.Model):
             return True
         return False
         
+
+class ConnectionLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='connection_logs')
+    timestamp = models.DateTimeField(auto_now_add=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(null=True, blank=True)
     
+    class Meta:
+        ordering = ['-timestamp']
+        verbose_name = "Journal de connexion"
+        verbose_name_plural = "Journal des connexions"
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.timestamp}"
