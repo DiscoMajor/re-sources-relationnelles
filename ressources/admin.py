@@ -16,5 +16,21 @@ class ConnectionLogAdmin(admin.ModelAdmin):
         return obj.user.email
     get_email.short_description = 'Email'
 
-admin.site.register(Ressource)
+@admin.register(Ressource)
+class RessourceAdmin(admin.ModelAdmin):
+    list_display = ('title', 'type', 'author', 'view_count', 'created_at')
+    list_filter = ('type', 'created_at')
+    search_fields = ('title', 'author__username')
+    readonly_fields = ('view_count',)
+    
+    fieldsets = (
+        (None, {
+            'fields': ('title', 'type', 'author', 'is_private', 'deleted_at')
+        }),
+        ('Statistiques', {
+            'fields': ('view_count',),
+            'description': 'Nombre de fois que cette ressource a été consultée'
+        }),
+    )
+
 admin.site.register(Type)

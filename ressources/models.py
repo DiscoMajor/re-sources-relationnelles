@@ -15,7 +15,8 @@ class Ressource(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
-
+    view_count = models.PositiveIntegerField(default=0)  # Ajoutez cette ligne
+    
     def __str__(self):
         return self.title
     
