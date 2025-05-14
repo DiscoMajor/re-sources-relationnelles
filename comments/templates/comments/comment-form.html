@@ -3,6 +3,10 @@
       {% csrf_token %}
       {{ form.as_p }}
       <button type="submit">Enregistrer</button>
-      <a href="{% url 'comments:list' object.ressource.pk if object else ressource_pk %}" data-turbo-frame="_top">Annuler</a>
+      {% if object %}
+          <a href="{% url 'comments:list' object.ressource.pk %}" data-turbo-frame="_top">Annuler</a>
+      {% else %}
+          <a href="{% url 'comments:list' ressource_pk %}" data-turbo-frame="_top">Annuler</a>
+      {% endif %}
     </form>
   </turbo-frame>
