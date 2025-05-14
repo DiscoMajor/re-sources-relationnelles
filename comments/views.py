@@ -76,6 +76,12 @@ class CommentUpdateView(LoginRequiredMixin, UpdateView):
             return HttpResponse(html)
 
         return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.object:
+            context['ressource'] = self.object.ressource
+        return context
 
     def get_success_url(self):
         return reverse_lazy('ressources:detail', kwargs={'pk': self.object.ressource.pk})
@@ -98,10 +104,13 @@ class CommentDeleteView(LoginRequiredMixin, DeleteView):
                 ressource=self.object.ressource, is_deleted=False
             ).order_by('-created_at')
             html = render_to_string(
-                'comments/_comment-list.html',
+                'comments/_comment_list.html',
                 {'comments': comments, 'ressource': self.object.ressource},
                 request=self.request
             )
             return HttpResponse(html)
 
         return redirect('ressources:detail', pk=self.object.ressource.pk)
+    
+    def get_success_url(self):
+        return reverse_lazy('ressources:detail', kwargs={'pk': self.object.ressource.pk})
