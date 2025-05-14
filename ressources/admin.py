@@ -1,5 +1,9 @@
 from django.contrib import admin
 from .models import Ressource, Type, ConnectionLog
+from django.utils import timezone
+
+def soft_delete_ressources(modeladmin, request, queryset):
+    queryset.update(deleted_at=timezone.now())
 
 @admin.register(ConnectionLog)
 class ConnectionLogAdmin(admin.ModelAdmin):
@@ -22,6 +26,7 @@ class RessourceAdmin(admin.ModelAdmin):
     list_filter = ('type', 'created_at')
     search_fields = ('title', 'author__username')
     readonly_fields = ('view_count',)
+    actions = [soft_delete_ressources]
     
     fieldsets = (
         (None, {
