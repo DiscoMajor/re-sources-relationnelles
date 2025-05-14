@@ -11,6 +11,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.utils import timezone
+from django.db.models import F
 
 
 class RessourceDetailView(DetailView):
@@ -18,15 +19,23 @@ class RessourceDetailView(DetailView):
     template_name = 'ressources/ressource-detail.html'
     context_object_name = 'ressource'
     
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        
+        if self.request.user.is_authenticated:
+            Ressource.objects.filter(pk=obj.pk).update(view_count=F('view_count') + 1)
+            obj.refresh_from_db()
+        
+        return obj
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['comments'] = Comment.objects.filter(
-            ressource=self.object, 
+            ressource=self.object,
             is_deleted=False
         ).order_by('-created_at')
         context['comment_form'] = CommentForm()
         return context
-
 
 class RessourceListView(ListView):
     model = Ressource
