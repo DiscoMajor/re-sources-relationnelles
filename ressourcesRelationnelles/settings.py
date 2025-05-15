@@ -15,8 +15,6 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-LIVEKIT_API_KEY = os.environ.get("LIVEKIT_API_KEY")
-LIVEKIT_API_SECRET = os.environ.get("LIVEKIT_API_SECRET")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/

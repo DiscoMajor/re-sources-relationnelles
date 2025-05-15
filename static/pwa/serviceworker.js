@@ -1,8 +1,11 @@
 const staticCacheName = 're-sources-cache-v1';
 
 const filesToCache = [
-    '/',
-    '/static/pwa/offline.html'
+    '/static/pwa/offline.html',
+    '/static/css/styles.css',
+    '/static/css/main.css',
+    'tailwind.config.js',
+    'postcss.config.js',
 ];
 
 // Installation du service worker
